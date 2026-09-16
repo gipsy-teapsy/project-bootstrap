@@ -1,7 +1,7 @@
 {
   "name": "gipsy-project-bootstrap",
   "interface": {
-    "displayName": "Project Bootstrap by Gipsy"
+    "displayName": "Project Bootstrap"
   },
   "plugins": [
     {

@@ -1,6 +1,6 @@
 {
   "name": "project-bootstrap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plan, coordinate, and execute durable project work across ChatGPT and Codex.",
   "author": {
     "name": "Gipsy"
@@ -8,7 +8,7 @@
   "repository": "https://github.com/gipsy-teapsy/project-bootstrap",
   "skills": "./skills/",
   "interface": {
-    "displayName": "Project Bootstrap by Gipsy",
+    "displayName": "Project Bootstrap",
     "shortDescription": "Durable coordination for project work",
     "longDescription": "Route project setup, coordination, and bounded execution through Manager, Master, and Task roles.",
     "developerName": "Gipsy",

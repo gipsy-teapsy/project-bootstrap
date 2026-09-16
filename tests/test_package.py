@@ -92,7 +92,7 @@ class PackageContractTests(unittest.TestCase):
     def test_marketplace_contract(self):
         data = load_json(MARKETPLACE)
         self.assertEqual("gipsy-project-bootstrap", data["name"])
-        self.assertEqual("Project Bootstrap by Gipsy", data["interface"]["displayName"])
+        self.assertEqual("Project Bootstrap", data["interface"]["displayName"])
         self.assertEqual(1, len(data["plugins"]))
         entry = data["plugins"][0]
         self.assertEqual("project-bootstrap", entry["name"])
@@ -119,7 +119,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.0", manifest["version"])
+            self.assertEqual("0.1.1", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -132,7 +132,7 @@ class PackageContractTests(unittest.TestCase):
             self.assertNotIn("mcpServers", manifest)
         self.assertEqual("./skills/", compat["skills"])
         interface = compat["interface"]
-        self.assertEqual("Project Bootstrap by Gipsy", interface["displayName"])
+        self.assertEqual("Project Bootstrap", interface["displayName"])
         self.assertEqual("Gipsy", interface["developerName"])
         self.assertEqual("Developer Tools", interface["category"])
         self.assertIsInstance(interface["capabilities"], list)
