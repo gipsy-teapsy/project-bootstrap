@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 — 2026-09-16
+
+- Bundled Russian quick-start and detailed user guides with the plugin.
+- Made both guides discoverable from the package entry points and Manager documentation routing.
+- Kept the behavioral architecture unchanged; this release updates documentation and release layout only.
+
 ## 0.1.1 — 2026-09-16
 
 - Simplified the user-facing display name to Project Bootstrap.

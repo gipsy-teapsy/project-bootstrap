@@ -8,7 +8,11 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.1 is a plugin beta. It packages the corrected beta.3 control model into three discoverable skills plus a shared core. It contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager availability is a core goal; live marketplace, cloud, Codex, and behavioral lifecycle testing is still pending.
+Version 0.1.2 is a plugin beta. It packages the corrected beta.3 control model into three discoverable skills plus a shared core. It contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager availability is a core goal; live marketplace, cloud, Codex, and behavioral lifecycle testing is still pending.
+
+## Documentation
+
+Keep **Manager**, **Master**, and **Task** enabled and describe the project or task in natural language. Start with the [Russian quick-start guide](plugins/project-bootstrap/docs/QUICK_START_RU.md), or use the [detailed Russian user guide](plugins/project-bootstrap/docs/USER_GUIDE_RU.md) for roles, continuity, recovery, Git, authority, portability, migration, and verification.
 
 ## Install from the GitHub marketplace
 

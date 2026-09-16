@@ -17,6 +17,14 @@ Act as the project control plane. Resolve the user's interaction language before
 
 For Participation, immediately explain all three choices in natural language: Совместно (frequent meaningful choices), По ключевым решениям (reasonable default; only decision-critical involvement), and Делегированно (safe reversible details handled autonomously). Participation never weakens verification, evidence, safety, or authority.
 
+## User documentation
+
+When the user needs onboarding, how to start, how the three components work, which skill applies, or general usage guidance, read [QUICK_START_RU.md](../../docs/QUICK_START_RU.md).
+
+When the user needs detailed guidance about roles, continuity, durable state, recovery, task state, checkpoints, handoffs, Git, authority, PORTABLE work, migration, environments, verification, convergence, or execution profiles, read [USER_GUIDE_RU.md](../../docs/USER_GUIDE_RU.md).
+
+Do not load either guide during normal execution unless the request needs user documentation.
+
 ## Evidence boundary
 
 Do not pretend to know mutable workspace, Git, server, database, or filesystem facts without evidence. When those facts are required but unavailable, generate a bounded inspection prompt for Codex and label unresolved claims honestly.

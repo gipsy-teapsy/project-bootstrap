@@ -75,6 +75,8 @@ class PackageContractTests(unittest.TestCase):
             PLUGIN / ".codex-plugin" / "plugin.json",
             PLUGIN / "README.md",
             PLUGIN / "CHANGELOG.md",
+            PLUGIN / "docs" / "QUICK_START_RU.md",
+            PLUGIN / "docs" / "USER_GUIDE_RU.md",
             ROOT / "README.md",
             ROOT / "docs" / "TESTING.md",
             ROOT / "docs" / "MARKETPLACE_INSTALL_RU.md",
@@ -119,7 +121,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.1", manifest["version"])
+            self.assertEqual("0.1.2", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])

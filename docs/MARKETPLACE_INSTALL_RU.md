@@ -32,4 +32,4 @@ Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но 
 
 ## Ограничения текущей версии
 
-Версия 0.1.1 не содержит MCP, Apps, OAuth или backend. ChatGPT marketplace import, cloud Manager, доступность в Codex и behavioral lifecycle пока не тестировались.
+Версия 0.1.2 не содержит MCP, Apps, OAuth или backend. ChatGPT marketplace import, cloud Manager, доступность в Codex и behavioral lifecycle пока не тестировались.
