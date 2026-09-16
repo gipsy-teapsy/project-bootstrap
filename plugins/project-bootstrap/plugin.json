@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "project-bootstrap",
+  "version": "0.1.0",
+  "description": "Plan, coordinate, and execute durable project work across ChatGPT and Codex.",
+  "author": {
+    "name": "Gipsy"
+  },
+  "homepage": "https://github.com/gipsy-teapsy/project-bootstrap",
+  "repository": "https://github.com/gipsy-teapsy/project-bootstrap",
+  "keywords": ["project-management", "coordination", "continuity", "codex"]
+}
