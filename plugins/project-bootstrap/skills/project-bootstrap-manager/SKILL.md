@@ -17,13 +17,34 @@ Act as the project control plane. Resolve the user's interaction language before
 
 For Participation, immediately explain all three choices in natural language: Совместно (frequent meaningful choices), По ключевым решениям (reasonable default; only decision-critical involvement), and Делегированно (safe reversible details handled autonomously). Participation never weakens verification, evidence, safety, or authority.
 
+## Interaction contract
+
+**USER-FACING → user's language.** Keep visible explanations, discovery questions, design reviews, recommendations, summaries, and result interpretation in the user's current language. Change that language only when the user requests it.
+
+**AGENT-FACING → English by default where appropriate.** Internal contracts, inter-session prompts, and Codex-facing handoffs may use English when it improves stability. English agent-facing material must not switch the surrounding user-facing response to English.
+
+Adapt terminology to the user's demonstrated context. Orient briefly, ask only questions that affect a real decision, and avoid a long questionnaire when facts can be discovered from evidence. Explain all three Participation options when choosing Participation. Do not require lifecycle vocabulary or role names from the user.
+
+## Onboarding paths
+
+When starting a new project, onboarding a user, answering how to use Project Bootstrap, or recommending a workflow, briefly present both available paths:
+
+- **Cloud-first** — initial project discussion, discovery, and architecture are often convenient in a ChatGPT Project using [CHATGPT_CLOUD_MANAGER.md](../../docs/CHATGPT_CLOUD_MANAGER.md). Workspace, file, Git, and code work normally moves to Codex through Master and Task.
+- **Codex-first** — start directly in Codex with the installed Project Bootstrap Skills. Codex-only operation remains fully supported.
+
+Cloud-first is a useful recommendation, not mandatory. Keep natural-language onboarding primary, do not turn the choice into a banner or ceremony, and do not repeat it during ordinary established project work.
+
 ## User documentation
 
 When the user needs onboarding, how to start, how the three components work, which skill applies, or general usage guidance, read [QUICK_START_RU.md](../../docs/QUICK_START_RU.md).
 
 When the user needs detailed guidance about roles, continuity, durable state, recovery, task state, checkpoints, handoffs, Git, authority, PORTABLE work, migration, environments, verification, convergence, or execution profiles, read [USER_GUIDE_RU.md](../../docs/USER_GUIDE_RU.md).
 
-Do not load either guide during normal execution unless the request needs user documentation.
+For ChatGPT Project delivery, Cloud-first or Codex-first routing, and lazy interim cloud continuity, read [cloud-manager-delivery.md](../../shared/references/cloud-manager-delivery.md).
+
+When a Cloud-to-Codex transition cannot use installed Project Bootstrap Skills, use [cloud-to-codex-fallback.md](../../shared/templates/cloud-to-codex-fallback.md).
+
+Do not load either user guide or the Cloud delivery resources during normal execution unless the request needs them.
 
 ## Evidence boundary
 

@@ -1,6 +1,6 @@
 # Project Bootstrap — руководство пользователя
 
-**Версия Plugin:** 0.1.2
+**Версия Plugin:** 0.1.3
 **Разработчик:** Gipsy
 **Статус:** beta
 
@@ -271,28 +271,40 @@ Manager предлагает три project-level режима.
 
 ---
 
-## 8. ChatGPT и Codex: где какая роль живёт
+## 8. ChatGPT и Codex: Cloud-first и Codex-first
 
-Роль Project Bootstrap не привязана жёстко к устройству или продукту.
+Роль Project Bootstrap не привязана жёстко к устройству или продукту. Выбор стартовой среды определяется тем, где удобнее принять решения и где доступны необходимые evidence и действия.
 
-Один и тот же Manager может работать и в ChatGPT, и в Codex.
+### Cloud-first
 
-Практически удобно разделять:
+Cloud-first подходит, если проект начинается с discovery, обсуждения цели, Participation и project-level решений в ChatGPT Plus.
 
-### ChatGPT
+Cloud Manager — не четвёртая роль и не отдельный Cloud Skill. Это canonical Manager contract, доставленный в ChatGPT Project через сгенерированный [CHATGPT_CLOUD_MANAGER.md](CHATGPT_CLOUD_MANAGER.md).
 
-Хорошо подходит для:
+При создании ChatGPT Project пользователь один раз:
+
+1. создаёт ChatGPT Project;
+2. скачивает [CHATGPT_CLOUD_MANAGER.md](CHATGPT_CLOUD_MANAGER.md) из опубликованной версии Project Bootstrap;
+3. добавляет этот файл как источник Project;
+4. копирует только короткий activation stub из раздела **Project Instructions** в настройки Project;
+5. начинает описывать проект обычным запросом на своём языке.
+
+Загружать Manager Skill, Shared Core и templates отдельными файлами не нужно: они уже механически собраны в artifact с provenance. Полный artifact в Project Instructions не копируется. При обновлении Project Bootstrap старый artifact удаляется и заменяется новым.
+
+Cloud ChatGPT хорошо подходит для:
 
 - Manager-обсуждения;
 - discovery;
-- архитектуры;
 - принятия project-level решений;
 - объяснения вариантов;
-- подготовки handoff в рабочую среду.
+- подготовки handoff в рабочую среду;
+- интерпретации результата Codex для пользователя.
 
-### Codex или другая workspace-среда
+### Codex-first
 
-Нужна, когда требуется:
+Codex-first подходит, если работа сразу начинается в реальном workspace. В среде с установленным Project Bootstrap Plugin оставьте Manager, Master и Task включёнными и сформулируйте запрос естественным языком.
+
+Codex или другая workspace-среда нужна, когда требуется:
 
 - читать реальные локальные файлы;
 - запускать команды;
@@ -301,46 +313,54 @@ Manager предлагает три project-level режима.
 - запускать тесты;
 - работать с сервером или другими инструментами.
 
-Обычно именно там действует Master и отдельные Task, если им нужен реальный workspace.
-
-Это не жёсткое правило. Критерий простой: роль должна иметь доказательства для тех mutable facts и действий, которые ей нужны.
+Cloud-first — рекомендация для удобного discovery, а не обязательный control path. Наличие capability не означает, что она обязана управлять workflow. Критерий простой: роль должна иметь evidence и authority для требуемых mutable facts и действий.
 
 ---
 
-## 9. Manager → Master handoff
+## 9. Cloud Manager → Codex handoff
 
-Когда project-level решения готовы, Manager может подготовить ready-to-copy Master bootstrap prompt.
+Cloud Manager предлагает переход в Codex только когда следующий принятый шаг требует workspace evidence или действия. Перед переходом он объясняет пользователю:
 
-В текущем Plugin такой prompt содержит, по смыслу:
+- что именно будет проверено или сделано;
+- зачем требуется workspace-capable среда;
+- какой execution profile уместен;
+- какой prompt нужно передать;
+- какой evidence должен вернуться.
 
-- назначение проекта;
-- Participation;
-- принятые и открытые архитектурные решения;
-- Environment Map;
-- Git strategy и authority;
-- durable project state;
-- известную активную работу;
-- инструкцию Master сначала проверить actual workspace и reconcile mutable claims.
+### Native path
 
-Рекомендация модели/thinking выводится отдельно от machine prompt.
+Native path используется только когда в Codex действительно доступны установленный Project Bootstrap Plugin и Skills.
 
-Пользователь не обязан собирать такой prompt вручную.
+Handoff состоит из двух независимых частей:
+
+1. короткого environment-specific invocation wrapper;
+2. canonical Manager → Master handoff body из `manager-to-master.md`.
+
+Wrapper выбирает установленную capability, но не дублирует поля проекта. Структура PROJECT / ARCHITECTURE / ENVIRONMENT MAP / GIT / CONTINUITY / MASTER START поддерживается только в canonical template.
+
+### Fallback path
+
+Fallback path используется для обычной Codex session без Project Bootstrap Plugin/Skills.
+
+Prompt содержит только bounded goal, workspace boundary, принятый контекст, mutable facts для проверки, scope/exclusions, фактическую authority, done conditions, expected evidence и return contract. Он не копирует весь Project Bootstrap и не создаёт внутри prompt вторую реализацию Manager/Master/Task.
+
+После возврата Manager рассматривает отчёт Codex как evidence: отделяет проверенные факты от inference и open items, сверяет его с принятыми решениями и объясняет результат пользователю. Английский Codex return интерпретируется на текущем языке пользователя.
 
 ---
 
 ## 10. Язык пользователя и язык внутренних prompts
 
-Project Bootstrap сначала определяет язык взаимодействия и отвечает пользователю на нём.
+Canonical interaction contract разделяет два слоя:
 
-Внутренние prompts между AI-сессиями могут использовать английский для более стабильного межсессионного контракта.
+> **USER-FACING → user's language**
 
-Например:
+Пользовательские объяснения, discovery-вопросы, design review, рекомендации, summary и интерпретация результатов остаются на текущем языке пользователя.
 
-- общение с пользователем — на русском;
-- Manager → Master prompt — на английском;
-- Master → Task prompt — на английском.
+> **AGENT-FACING → English by default where appropriate**
 
-Это не означает смену языка пользовательского общения.
+Внутренние contracts, prompts между AI-сессиями и Codex-facing handoffs могут использовать английский для стабильности. Англоязычный uploaded artifact, native/fallback prompt или Codex return не должен переключать окружающее пользовательское общение на английский.
+
+Язык видимого ответа меняется, если пользователь явно просит продолжить на другом языке.
 
 ---
 
@@ -374,6 +394,15 @@ GIT = HISTORY OF MEMORY.
 ```
 
 Это не означает, что каждый проект обязан иметь Git или специальный набор файлов. Конкретная архитектура подбирается адаптивно.
+
+### Project Decision Snapshot в Cloud
+
+Отдельный snapshot в ChatGPT Project не является обязательной системой состояния. Manager предлагает или создаёт его только когда одновременно выполнены два условия:
+
+- накопились существенные project-level решения, которые должны пережить смену cloud session;
+- более подходящего canonical durable workspace state ещё нет.
+
+Snapshot не нужен для короткого discovery, tentative-информации, решений, которые скоро будут перенесены в workspace state, или когда подходящий durable state уже существует. Если snapshot понадобился, он остаётся компактным и временным; после promotion в canonical workspace state его нужно retire или supersede.
 
 ---
 
@@ -785,7 +814,9 @@ Project Bootstrap проверяет portable/continuity architecture и не п
 
 ## 29. Beta-статус
 
-Project Bootstrap v0.1.2 — beta.
+Project Bootstrap v0.1.3 — beta.
+
+Cloud Manager прошёл начальное ручное smoke testing; расширенное behavioral testing продолжается в beta. Это не означает, что весь документированный набор Cloud-сценариев уже выполнен.
 
 Валидная структура Plugin и manifests не равны полному behavioral lifecycle testing.
 

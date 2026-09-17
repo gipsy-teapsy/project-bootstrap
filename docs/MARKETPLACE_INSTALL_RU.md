@@ -12,7 +12,7 @@ Path: `<blank>`
 
 `<blank>` означает: оставьте поле Path пустым, потому что `.agents/plugins/marketplace.json` находится в корне repository.
 
-## Импорт
+## Импорт Plugin
 
 1. Откройте **Admin → Plugins**.
 2. Выберите **Add → Import marketplace**.
@@ -26,10 +26,26 @@ Path: `<blank>`
 
 Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но при GitHub workspace import итоговые workspace policies настраивает администратор.
 
+## Cloud Manager в ChatGPT Project
+
+Это отдельный способ доставки того же Manager contract для ChatGPT Project, где нельзя полагаться на прямую доступность Plugin Skills.
+
+Один раз при создании Project:
+
+1. Создайте ChatGPT Project.
+2. Скачайте [CHATGPT_CLOUD_MANAGER.md](../plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md) из опубликованной версии.
+3. Добавьте этот файл как источник Project.
+4. Скопируйте только короткий activation stub из раздела **Project Instructions** artifact в Project Instructions.
+5. Начните описывать проект обычными словами на своём языке.
+
+Полный artifact или большой prompt в Project Instructions копировать не нужно. Cloud Manager не является четвёртой ролью и не заменяет Master/Task в workspace.
+
 ## Обновление
 
-После push новой версии откройте **Admin → Plugins → Marketplaces**, выберите **Project Bootstrap** и нажмите **Sync now**. Проверьте сохранённый sync report. Невалидное обновление существующего plugin должно оставить последнюю рабочую версию; после исправления повторите **Sync now**.
+После push новой версии для marketplace откройте **Admin → Plugins → Marketplaces**, выберите **Project Bootstrap** и нажмите **Sync now**. Проверьте сохранённый sync report. Невалидное обновление существующего plugin должно оставить последнюю рабочую версию; после исправления повторите **Sync now**.
+
+Для ChatGPT Project удалите старый `CHATGPT_CLOUD_MANAGER.md` и загрузите новый из той же опубликованной версии. Короткую Project Instructions меняйте только если release notes явно сообщают об изменении её схемы.
 
 ## Ограничения текущей версии
 
-Версия 0.1.2 не содержит MCP, Apps, OAuth или backend. ChatGPT marketplace import, cloud Manager, доступность в Codex и behavioral lifecycle пока не тестировались.
+Версия 0.1.3 не содержит MCP, Apps, OAuth или backend. Наличие Cloud Manager artifact не доказывает доступность Plugin Skills в конкретной Cloud/Codex среде. Cloud Manager прошёл начальное ручное smoke testing; расширенный документированный behavioral suite продолжается в beta. ChatGPT marketplace Sync, доступность Plugin в Codex и полный behavioral lifecycle не заявлены как пройденные.

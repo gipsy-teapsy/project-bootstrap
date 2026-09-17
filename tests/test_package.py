@@ -13,6 +13,7 @@ SKILLS = (
     "project-bootstrap-task",
 )
 SHARED_REFERENCES = (
+    "cloud-manager-delivery.md",
     "control-model.md",
     "evidence-and-authority.md",
     "recovery-and-continuity.md",
@@ -20,6 +21,7 @@ SHARED_REFERENCES = (
     "execution-profiles.md",
 )
 SHARED_TEMPLATES = (
+    "cloud-to-codex-fallback.md",
     "manager-to-master.md",
     "master-to-task.md",
     "task-state.md",
@@ -77,6 +79,7 @@ class PackageContractTests(unittest.TestCase):
             PLUGIN / "CHANGELOG.md",
             PLUGIN / "docs" / "QUICK_START_RU.md",
             PLUGIN / "docs" / "USER_GUIDE_RU.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
             ROOT / "README.md",
             ROOT / "docs" / "TESTING.md",
             ROOT / "docs" / "MARKETPLACE_INSTALL_RU.md",
@@ -121,7 +124,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.2", manifest["version"])
+            self.assertEqual("0.1.3", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -146,6 +149,55 @@ class PackageContractTests(unittest.TestCase):
 
     def test_manager_skill_frontmatter_and_links(self):
         self._assert_skill("project-bootstrap-manager")
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("USER-FACING → user's language", manager)
+        self.assertIn(
+            "AGENT-FACING → English by default where appropriate", manager
+        )
+
+    def test_manager_onboarding_offers_optional_cloud_first_path(self):
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        for marker in (
+            "## Onboarding paths",
+            "CHATGPT_CLOUD_MANAGER.md",
+            "Cloud-first",
+            "Codex-first",
+            "not mandatory",
+            "established project work",
+        ):
+            self.assertIn(marker, manager)
+
+    def test_cloud_manager_language_guard_and_behavioral_status(self):
+        artifact = (PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md").read_text(
+            encoding="utf-8"
+        )
+        testing = (ROOT / "docs" / "TESTING.md").read_text(encoding="utf-8")
+        self.assertIn("USER-FACING → user's language", artifact)
+        self.assertIn(
+            "AGENT-FACING → English by default where appropriate", artifact
+        )
+        self.assertIn("English canonical source text", artifact)
+        for scenario in (
+            "Russian onboarding",
+            "Participation",
+            "Native handoff",
+            "Fallback handoff",
+            "English Codex return interpretation",
+            "Explicit user-requested language change",
+        ):
+            self.assertIn(scenario, testing)
+        self.assertIn(
+            "Cloud Manager: initial manual smoke tested; broader behavioral "
+            "testing continues during beta.",
+            testing,
+        )
+        self.assertIsNone(
+            re.search(r"(?i)Cloud Manager behavioral\s*:\s*PASS", testing)
+        )
 
     def test_master_skill_frontmatter_and_links(self):
         self._assert_skill("project-bootstrap-master")
@@ -239,6 +291,39 @@ class PackageContractTests(unittest.TestCase):
             if obsolete in path.read_text(encoding="utf-8"):
                 findings.append(str(path.relative_to(ROOT)))
         self.assertEqual([], findings)
+
+    def test_public_markdown_links_resolve(self):
+        findings = []
+        for path in product_text_files():
+            if path.suffix.lower() != ".md":
+                continue
+            for target in LINK.findall(path.read_text(encoding="utf-8")):
+                if re.match(r"^[a-z]+://|^#", target):
+                    continue
+                destination = (path.parent / target.split("#", 1)[0]).resolve()
+                if not destination.is_file():
+                    findings.append(f"{path.relative_to(ROOT)} -> {target}")
+        self.assertEqual([], findings, "broken public Markdown links")
+
+    def test_user_entry_points_link_to_downloadable_cloud_manager(self):
+        artifact = (PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md").resolve()
+        entry_points = (
+            ROOT / "README.md",
+            PLUGIN / "README.md",
+            PLUGIN / "docs" / "QUICK_START_RU.md",
+            PLUGIN / "docs" / "USER_GUIDE_RU.md",
+            ROOT / "docs" / "MARKETPLACE_INSTALL_RU.md",
+        )
+        missing = []
+        for path in entry_points:
+            destinations = {
+                (path.parent / target.split("#", 1)[0]).resolve()
+                for target in LINK.findall(path.read_text(encoding="utf-8"))
+                if not re.match(r"^[a-z]+://|^#", target)
+            }
+            if artifact not in destinations:
+                missing.append(str(path.relative_to(ROOT)))
+        self.assertEqual([], missing, "Cloud Manager download link missing")
 
     def test_no_unexpected_binary_or_cache_files_in_distribution(self):
         allowed_suffixes = {".md", ".json"}

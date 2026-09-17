@@ -8,11 +8,25 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.2 is a plugin beta. It packages the corrected beta.3 control model into three discoverable skills plus a shared core. It contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager availability is a core goal; live marketplace, cloud, Codex, and behavioral lifecycle testing is still pending.
+Version 0.1.3 is a plugin beta. It packages the corrected beta.3 control model into three discoverable skills plus a shared core and adds a generated Cloud Manager delivery artifact for ChatGPT Projects. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
 
 ## Documentation
 
-Keep **Manager**, **Master**, and **Task** enabled and describe the project or task in natural language. Start with the [Russian quick-start guide](plugins/project-bootstrap/docs/QUICK_START_RU.md), or use the [detailed Russian user guide](plugins/project-bootstrap/docs/USER_GUIDE_RU.md) for roles, continuity, recovery, Git, authority, portability, migration, and verification.
+Keep **Manager**, **Master**, and **Task** enabled in Plugin-capable environments and describe the project or task in natural language.
+
+- [Russian quick-start guide](plugins/project-bootstrap/docs/QUICK_START_RU.md)
+- [Detailed Russian user guide](plugins/project-bootstrap/docs/USER_GUIDE_RU.md)
+- [Generated ChatGPT Cloud Manager artifact](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md)
+
+Cloud-first setup:
+
+1. Create a ChatGPT Project.
+2. Download [CHATGPT_CLOUD_MANAGER.md](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md).
+3. Add that file as a Project source.
+4. Copy only its short activation stub into Project Instructions.
+5. Start describing the project in natural language.
+
+Do not copy the full artifact into Project Instructions. For Codex-first use, keep using the installed Plugin Skills directly. When Project Bootstrap is updated, replace the uploaded artifact with the new released file.
 
 ## Install from the GitHub marketplace
 
@@ -22,18 +36,21 @@ Workspace admins can import the repository marketplace with:
 - Git ref: `main`
 - Path: leave blank
 
-See [docs/MARKETPLACE_INSTALL_RU.md](docs/MARKETPLACE_INSTALL_RU.md) for the exact ChatGPT UI flow. After repository updates, use **Admin → Plugins → Marketplaces → Sync now**.
+See [docs/MARKETPLACE_INSTALL_RU.md](docs/MARKETPLACE_INSTALL_RU.md) for the exact ChatGPT UI flow and the separate ChatGPT Project setup. After repository updates, use **Admin → Plugins → Marketplaces → Sync now** for the marketplace installation.
 
 ## Package layout
 
 The plugin uses a portable Agent Plugins 1.0 root manifest and retains the supported `.codex-plugin/plugin.json` compatibility fallback. The repo marketplace is at `.agents/plugins/marketplace.json`.
+
+`CHATGPT_CLOUD_MANAGER.md` is generated from the canonical Manager Skill, Shared Core, Cloud delivery reference, and handoff templates. `tools/build_cloud_manager.py` composes and validates those sources but owns no behavioral policy.
 
 ## Validation
 
 Run:
 
 ```powershell
-python -m unittest tests.test_package -v
+python tools/build_cloud_manager.py --repo . --check
+python -m unittest discover -s tests -p "test_*.py" -v
 python <plugin-creator>/scripts/validate_plugin.py plugins/project-bootstrap
 ```
 

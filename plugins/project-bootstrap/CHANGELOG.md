@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.3 — 2026-09-17
+
+- Added a generated Cloud Manager artifact for ChatGPT Projects without creating a fourth Project Bootstrap role.
+- Added mechanical generation, provenance, stale-artifact checking, and canonical-input convergence tests.
+- Added native and bounded fallback Cloud-to-Codex handoff routes, with native structure derived from the canonical Manager → Master template.
+- Made Project Decision Snapshot lazy and interim rather than mandatory cloud state.
+- Made the user-facing versus agent-facing language boundary explicit and documented six pending runtime behavioral scenarios.
+- Exposed the generated Cloud Manager as a directly downloadable user artifact with a five-step ChatGPT Project setup.
+- Added optional, non-repetitive Cloud-first guidance to Codex Manager onboarding while keeping Codex-only operation fully supported.
+- Recorded accepted initial manual Cloud smoke testing without claiming completion of the broader behavioral suite.
+- Kept MCP, Apps, OAuth, backend infrastructure, and technical Plugin/marketplace identities unchanged.
+
 ## 0.1.2 — 2026-09-16
 
 - Bundled Russian quick-start and detailed user guides with the plugin.
