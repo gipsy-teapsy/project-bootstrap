@@ -1,6 +1,8 @@
 import json
 import re
+import struct
 import unittest
+import zlib
 from pathlib import Path
 
 
@@ -28,6 +30,17 @@ SHARED_TEMPLATES = (
     "task-checkpoint.md",
     "task-handoff.md",
 )
+BRAND_ASSETS = {
+    "icon-master-1024.png": (1024, 1024),
+    "icon-512.png": (512, 512),
+    "icon-128.png": (128, 128),
+    "icon-64.png": (64, 64),
+    "icon-32.png": (32, 32),
+    "icon-16.png": (16, 16),
+    "icon-small-32.png": (32, 32),
+    "icon-small-24.png": (24, 24),
+    "icon-small-16.png": (16, 16),
+}
 SEMVER = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)"
@@ -69,6 +82,70 @@ def product_text_files():
             yield from (path for path in item.rglob("*") if path.is_file())
 
 
+def read_png_rgba_alpha(path: Path):
+    data = path.read_bytes()
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise AssertionError(f"{path} is not a PNG")
+    offset = 8
+    header = None
+    compressed = bytearray()
+    while offset < len(data):
+        length = struct.unpack(">I", data[offset : offset + 4])[0]
+        chunk_type = data[offset + 4 : offset + 8]
+        payload = data[offset + 8 : offset + 8 + length]
+        crc = struct.unpack(">I", data[offset + 8 + length : offset + 12 + length])[0]
+        if zlib.crc32(chunk_type + payload) & 0xFFFFFFFF != crc:
+            raise AssertionError(f"{path} has an invalid PNG chunk CRC")
+        offset += 12 + length
+        if chunk_type == b"IHDR":
+            header = struct.unpack(">IIBBBBB", payload)
+        elif chunk_type == b"IDAT":
+            compressed.extend(payload)
+        elif chunk_type == b"IEND":
+            break
+    if header is None:
+        raise AssertionError(f"{path} has no PNG IHDR")
+    width, height, depth, color_type, compression, filtering, interlace = header
+    if (depth, color_type, compression, filtering, interlace) != (8, 6, 0, 0, 0):
+        raise AssertionError(f"{path} must be non-interlaced 8-bit RGBA PNG")
+    stride = width * 4
+    raw = zlib.decompress(bytes(compressed))
+    if len(raw) != height * (stride + 1):
+        raise AssertionError(f"{path} has an unexpected decompressed size")
+    rows = []
+    previous = bytearray(stride)
+    cursor = 0
+    for _ in range(height):
+        filter_type = raw[cursor]
+        current = bytearray(raw[cursor + 1 : cursor + 1 + stride])
+        cursor += stride + 1
+        for index in range(stride):
+            left = current[index - 4] if index >= 4 else 0
+            above = previous[index]
+            upper_left = previous[index - 4] if index >= 4 else 0
+            if filter_type == 1:
+                current[index] = (current[index] + left) & 0xFF
+            elif filter_type == 2:
+                current[index] = (current[index] + above) & 0xFF
+            elif filter_type == 3:
+                current[index] = (current[index] + ((left + above) // 2)) & 0xFF
+            elif filter_type == 4:
+                estimate = left + above - upper_left
+                distances = (
+                    abs(estimate - left),
+                    abs(estimate - above),
+                    abs(estimate - upper_left),
+                )
+                predictor = (left, above, upper_left)[distances.index(min(distances))]
+                current[index] = (current[index] + predictor) & 0xFF
+            elif filter_type != 0:
+                raise AssertionError(f"{path} uses unknown PNG filter {filter_type}")
+        rows.append(current)
+        previous = current
+    alpha = [row[index] for row in rows for index in range(3, stride, 4)]
+    return (width, height), rows, alpha
+
+
 class PackageContractTests(unittest.TestCase):
     def test_expected_layout_exists(self):
         expected = [
@@ -91,6 +168,7 @@ class PackageContractTests(unittest.TestCase):
         expected.extend(
             PLUGIN / "shared" / "templates" / name for name in SHARED_TEMPLATES
         )
+        expected.extend(PLUGIN / "assets" / name for name in BRAND_ASSETS)
         missing = [str(path.relative_to(ROOT)) for path in expected if not path.is_file()]
         self.assertEqual([], missing, f"missing required files: {missing}")
 
@@ -124,7 +202,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.3", manifest["version"])
+            self.assertEqual("0.1.4", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -136,6 +214,7 @@ class PackageContractTests(unittest.TestCase):
             self.assertNotIn("apps", manifest)
             self.assertNotIn("mcpServers", manifest)
         self.assertEqual("./skills/", compat["skills"])
+        self.assertEqual(portable["interface"], compat["interface"])
         interface = compat["interface"]
         self.assertEqual("Project Bootstrap", interface["displayName"])
         self.assertEqual("Gipsy", interface["developerName"])
@@ -146,6 +225,31 @@ class PackageContractTests(unittest.TestCase):
         self.assertGreater(len(interface["defaultPrompt"]), 0)
         self.assertLessEqual(len(interface["defaultPrompt"]), 3)
         self.assertTrue(all(len(item) <= 128 for item in interface["defaultPrompt"]))
+        self.assertEqual("./assets/icon-master-1024.png", interface["logo"])
+        self.assertEqual("./assets/icon-64.png", interface["composerIcon"])
+        for field in ("logo", "composerIcon"):
+            self.assertTrue((PLUGIN / interface[field]).resolve().is_file())
+
+    def test_brand_assets_are_exact_rgba_png_set(self):
+        assets = PLUGIN / "assets"
+        self.assertEqual(sorted(BRAND_ASSETS), sorted(path.name for path in assets.iterdir()))
+        for name, expected_size in BRAND_ASSETS.items():
+            with self.subTest(name=name):
+                size, rows, alpha = read_png_rgba_alpha(assets / name)
+                self.assertEqual(expected_size, size)
+                self.assertEqual(0, min(alpha), "transparent pixels are required")
+                self.assertEqual(255, max(alpha), "opaque symbol pixels are required")
+                self.assertTrue(any(0 < value < 255 for value in alpha))
+                width, height = size
+                corner_indexes = (0, width - 1, (height - 1) * width, width * height - 1)
+                self.assertTrue(all(alpha[index] == 0 for index in corner_indexes))
+                edge_alpha = (
+                    [rows[0][index] for index in range(3, width * 4, 4)]
+                    + [rows[-1][index] for index in range(3, width * 4, 4)]
+                    + [row[3] for row in rows[1:-1]]
+                    + [row[-1] for row in rows[1:-1]]
+                )
+                self.assertFalse(any(value == 255 for value in edge_alpha))
 
     def test_manager_skill_frontmatter_and_links(self):
         self._assert_skill("project-bootstrap-manager")
@@ -326,7 +430,7 @@ class PackageContractTests(unittest.TestCase):
         self.assertEqual([], missing, "Cloud Manager download link missing")
 
     def test_no_unexpected_binary_or_cache_files_in_distribution(self):
-        allowed_suffixes = {".md", ".json"}
+        allowed_suffixes = {".md", ".json", ".png"}
         bad = []
         for base in (ROOT / ".agents", PLUGIN, ROOT / "docs"):
             if not base.exists():

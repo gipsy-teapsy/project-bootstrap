@@ -8,7 +8,7 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.3 is a plugin beta. It packages the corrected beta.3 control model into three discoverable skills plus a shared core and adds a generated Cloud Manager delivery artifact for ChatGPT Projects. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
+Version 0.1.4 is a plugin beta. It preserves the 0.1.3 Manager, Master, Task, Shared Core, and Cloud Manager behavior while adding the finalized packaged branding and icon assets to both supported Plugin manifests. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
 
 ## Documentation
 

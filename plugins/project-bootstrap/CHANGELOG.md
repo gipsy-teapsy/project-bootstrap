@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4 — 2026-09-17
+
+- Added the finalized transparent PNG branding and icon asset set.
+- Configured the packaged 1024 px logo and 64 px composer icon in both Plugin manifests.
+- Added the nine approved assets to the exact public distribution.
+- Kept the Manager, Master, Task, Cloud Manager, and control-model behavior unchanged.
+
 ## 0.1.3 — 2026-09-17
 
 - Added a generated Cloud Manager artifact for ChatGPT Projects without creating a fourth Project Bootstrap role.

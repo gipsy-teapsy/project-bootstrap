@@ -1,8 +1,8 @@
 # Project Bootstrap Cloud Manager
 
 <!-- GENERATED FILE. DO NOT EDIT DIRECTLY. -->
-Version: 0.1.3
-Canonical source set SHA-256: cb0a291f77c68f3b000454129e11dc621bf69d377f28ef2c948823e4db230df7
+Version: 0.1.4
+Canonical source set SHA-256: 7f5b35ff994049f19b6aeeadbef183a82ea5bbfc1f055b11245461dd66f4bd4c
 
 ## ChatGPT Project setup
 

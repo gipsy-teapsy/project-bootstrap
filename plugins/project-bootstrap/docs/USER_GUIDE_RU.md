@@ -1,6 +1,6 @@
 # Project Bootstrap — руководство пользователя
 
-**Версия Plugin:** 0.1.3
+**Версия Plugin:** 0.1.4
 **Разработчик:** Gipsy
 **Статус:** beta
 
@@ -814,7 +814,7 @@ Project Bootstrap проверяет portable/continuity architecture и не п
 
 ## 29. Beta-статус
 
-Project Bootstrap v0.1.3 — beta.
+Project Bootstrap v0.1.4 — beta.
 
 Cloud Manager прошёл начальное ручное smoke testing; расширенное behavioral testing продолжается в beta. Это не означает, что весь документированный набор Cloud-сценариев уже выполнен.
 
