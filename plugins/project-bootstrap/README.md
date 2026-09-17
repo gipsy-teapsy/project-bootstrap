@@ -1,6 +1,6 @@
 # Project Bootstrap plugin
 
-Project Bootstrap v0.1.4 packages three user-facing skills:
+Project Bootstrap v0.1.5 packages three user-facing skills:
 
 - `project-bootstrap-manager`
 - `project-bootstrap-master`

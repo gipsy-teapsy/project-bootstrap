@@ -1,6 +1,6 @@
 {
   "name": "project-bootstrap",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Plan, coordinate, and execute durable project work across ChatGPT and Codex.",
   "author": {
     "name": "Gipsy"

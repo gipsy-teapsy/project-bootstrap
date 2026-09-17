@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 — 2026-09-17
+
+- Tuned the packaged Project Bootstrap icon assets to reduce visual saturation while preserving the existing branding, dimensions, transparency, and manifest paths.
+- No Manager, Master, Task, Shared Core, Cloud Manager, control-model, or workflow behavior changes.
+
 ## 0.1.4 — 2026-09-17
 
 - Added the finalized transparent PNG branding and icon asset set.

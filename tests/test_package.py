@@ -202,7 +202,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.4", manifest["version"])
+            self.assertEqual("0.1.5", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
