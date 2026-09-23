@@ -1,6 +1,6 @@
 # Project Bootstrap — руководство пользователя
 
-**Версия Plugin:** 0.1.5
+**Версия Plugin:** 0.1.6
 **Разработчик:** Gipsy
 **Статус:** beta
 
@@ -319,13 +319,13 @@ Cloud-first — рекомендация для удобного discovery, а �
 
 ## 9. Cloud Manager → Codex handoff
 
-Cloud Manager предлагает переход в Codex только когда следующий принятый шаг требует workspace evidence или действия. Перед переходом он объясняет пользователю:
+Cloud Manager предлагает переход в Codex только когда следующий принятый шаг требует workspace evidence или действия. Готовый handoff отображается в следующем порядке:
 
-- что именно будет проверено или сделано;
-- зачем требуется workspace-capable среда;
-- какой execution profile уместен;
-- какой prompt нужно передать;
-- какой evidence должен вернуться.
+1. полный copy-ready Codex-facing prompt;
+2. объяснение на текущем языке пользователя: что будет сделано, зачем нужна workspace-capable среда и какой evidence должен вернуться;
+3. отдельная рекомендация execution profile с моделью или capability class, thinking и краткой причиной.
+
+Execution-profile guidance не входит в durable handoff body. Пояснение перед prompt допустимо только если до копирования пользователь должен принять существенное решение или увидеть существенное предупреждение.
 
 ### Native path
 
@@ -814,7 +814,7 @@ Project Bootstrap проверяет portable/continuity architecture и не п
 
 ## 29. Beta-статус
 
-Project Bootstrap v0.1.5 — beta.
+Project Bootstrap v0.1.6 — beta.
 
 Cloud Manager прошёл начальное ручное smoke testing; расширенное behavioral testing продолжается в beta. Это не означает, что весь документированный набор Cloud-сценариев уже выполнен.
 

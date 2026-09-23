@@ -8,7 +8,7 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.5 is a plugin beta. It preserves the 0.1.4 Manager, Master, Task, Shared Core, Cloud Manager, control-model, and workflow behavior while refining the packaged icon assets to reduce visual saturation. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
+Version 0.1.6 is a plugin beta. It makes Manager-produced Codex handoffs prompt-first and adds Windows-safe LF provenance handling without changing the Manager/Master/Task role model, control model, or durable handoff schemas. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
 
 ## Documentation
 

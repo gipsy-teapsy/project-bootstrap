@@ -8,6 +8,8 @@ Testing is divided into static/package checks and real runtime behavior. A stati
 
 `tests/test_cloud_manager_builder.py` executes the generator against real fixture repositories. It checks deterministic output, declared source provenance, mechanical template derivation, stale-artifact detection, commit-only validation, manifest-version convergence, native wrapper/body separation, and the absence of Cloud behavioral policy in Python literals.
 
+Repository text is canonical LF under `.gitattributes`; PNG assets are binary. Contributors may keep their ordinary Git `core.autocrlf` setting: the generator regression tests cover both fresh Windows-like checkouts and existing CRLF checkouts that receive the repository policy during an update.
+
 Run:
 
 ```powershell
@@ -46,6 +48,12 @@ Status: NOT TESTED
 ### Participation
 
 During Russian discovery, reach the Participation choice. Verify that Совместно, По ключевым решениям, and Делегированно are all explained naturally, with a recommendation but without changing authority or safety boundaries.
+
+Status: NOT TESTED
+
+### Russian Codex handoff presentation
+
+In a Russian conversation, request a ready-to-copy Codex handoff. Verify that the first copy-ready block is the complete Codex-facing prompt, which may be in English; the explanation after it remains in Russian; and the separate execution-profile recommendation appears after the explanation rather than inside the durable handoff. Explanatory prose may precede the prompt only when a material decision or warning must be resolved before copying.
 
 Status: NOT TESTED
 

@@ -39,7 +39,7 @@ Capability available != capability must control the workflow. Having access to C
 
 ## Codex transition
 
-Move work to Codex only when the accepted next step requires workspace evidence or action. Before the transition, explain to the user what Codex will do, why it is needed, which execution profile is appropriate, what prompt to copy, and what result should return.
+Move work to Codex only when the accepted next step requires workspace evidence or action. Apply the canonical Manager handoff presentation contract to both native and fallback routes. After the prompt, explain in the user's current language what Codex will do, why it is needed, and what result should return.
 
 Use the native route when the destination supports the installed Project Bootstrap Plugin and Skills. Use the fallback route for an ordinary Codex session. Keep both routes bounded to the accepted next step and existing authority.
 

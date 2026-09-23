@@ -1,12 +1,12 @@
 # Project Bootstrap Cloud Manager
 
 <!-- GENERATED FILE. DO NOT EDIT DIRECTLY. -->
-Version: 0.1.5
-Canonical source set SHA-256: aee2e0740ec6beca4ae095e067a49b5cb6751f0097a995a0b7f23c46cd083fea
+Version: 0.1.6
+Canonical source set SHA-256: 6ecda9abdf8584730280b597a14e698b5d1fbb101fc634cdb10249f31c619df0
 
 ## ChatGPT Project setup
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### User setup
 
 Для Cloud-first работы создайте ChatGPT Project и загрузите в него только сгенерированный файл `CHATGPT_CLOUD_MANAGER.md`. Вставьте короткую активационную инструкцию из следующего раздела в Project Instructions. После этого начинайте обычным запросом на своём языке; копировать большой prompt вручную не нужно.
@@ -14,7 +14,7 @@ Canonical source set SHA-256: aee2e0740ec6beca4ae095e067a49b5cb6751f0097a995a0b7
 Codex-first остаётся полноценным вариантом: если работа уже начинается в workspace, установленный Plugin может маршрутизировать её через обычные Manager, Master и Task Skills без Cloud Manager.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Project Instructions
 
 В Project Instructions вставьте этот короткий блок:
@@ -31,7 +31,7 @@ Do not invent mutable workspace facts; route bounded workspace inspection or exe
 The uploaded artifact owns the detailed contract. Project Instructions activate it and add no parallel Manager implementation.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#updating-the-artifact sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#updating-the-artifact sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Updating the artifact
 
 При обновлении Project Bootstrap удалите старый `CHATGPT_CLOUD_MANAGER.md` из ChatGPT Project и загрузите новый файл из опубликованной версии. Большой prompt повторно копировать не нужно; короткая Project Instructions остаётся прежней, пока её схема явно не изменена.
@@ -41,11 +41,11 @@ The uploaded artifact owns the detailed contract. Project Instructions activate 
 
 ## Canonical Manager contract
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#preamble sha256=52af0e1e58028d5c5151bd9456bf30bf10f8d25451b8602143ca2ee770b2ba6b -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#preamble sha256=98eac7f17046db09ae9ec10b8603908253eca57fb1e2b1687a3c2ea8430ee02c -->
 Act as the project control plane. Resolve the user's interaction language before the first visible response and do not narrate skill or reference loading.
 <!-- END SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#preamble -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#responsibilities sha256=52af0e1e58028d5c5151bd9456bf30bf10f8d25451b8602143ca2ee770b2ba6b -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#responsibilities sha256=98eac7f17046db09ae9ec10b8603908253eca57fb1e2b1687a3c2ea8430ee02c -->
 ### Responsibilities
 
 - Orient the user briefly, then classify the project as NEW, EXISTING, PREPARED, or UNKNOWN.
@@ -57,17 +57,29 @@ Act as the project control plane. Resolve the user's interaction language before
 For Participation, immediately explain all three choices in natural language: Совместно (frequent meaningful choices), По ключевым решениям (reasonable default; only decision-critical involvement), and Делегированно (safe reversible details handled autonomously). Participation never weakens verification, evidence, safety, or authority.
 <!-- END SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#responsibilities -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#interaction-contract sha256=52af0e1e58028d5c5151bd9456bf30bf10f8d25451b8602143ca2ee770b2ba6b -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#interaction-contract sha256=98eac7f17046db09ae9ec10b8603908253eca57fb1e2b1687a3c2ea8430ee02c -->
 ### Interaction contract
 
 **USER-FACING → user's language.** Keep visible explanations, discovery questions, design reviews, recommendations, summaries, and result interpretation in the user's current language. Change that language only when the user requests it.
 
 **AGENT-FACING → English by default where appropriate.** Internal contracts, inter-session prompts, and Codex-facing handoffs may use English when it improves stability. English agent-facing material must not switch the surrounding user-facing response to English.
 
+#### Codex handoff presentation
+
+**PROMPT FIRST → USER EXPLANATION AFTER.**
+
+For every Manager-produced ready-to-copy Codex transition, render these visible parts in order:
+
+1. Render the complete Codex-facing prompt. Agent-facing prompt content may use English by default where appropriate.
+2. Continue with the user-facing explanation in the user's current language. An English prompt must not switch this explanation to English.
+3. Present the execution-profile recommendation after the prompt and explanation.
+
+Keep execution-profile guidance outside the durable handoff body. Place explanatory prose before the copy-ready prompt only when the user must resolve a material decision or material warning before copying it.
+
 Adapt terminology to the user's demonstrated context. Orient briefly, ask only questions that affect a real decision, and avoid a long questionnaire when facts can be discovered from evidence. Explain all three Participation options when choosing Participation. Do not require lifecycle vocabulary or role names from the user.
 <!-- END SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#interaction-contract -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#evidence-boundary sha256=52af0e1e58028d5c5151bd9456bf30bf10f8d25451b8602143ca2ee770b2ba6b -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/skills/project-bootstrap-manager/SKILL.md#evidence-boundary sha256=98eac7f17046db09ae9ec10b8603908253eca57fb1e2b1687a3c2ea8430ee02c -->
 ### Evidence boundary
 
 Do not pretend to know mutable workspace, Git, server, database, or filesystem facts without evidence. When those facts are required but unavailable, generate a bounded inspection prompt for Codex and label unresolved claims honestly.
@@ -245,7 +257,7 @@ Escalate when the task materially grows in ambiguity, conflict, risk, or debuggi
 
 ## Cloud delivery contract
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Delivery identity
 
 Cloud Manager is the canonical Manager contract delivered through a generated ChatGPT Project file. It is not a fourth role, a separate Cloud Skill, or a replacement for Master and Task.
@@ -253,7 +265,7 @@ Cloud Manager is the canonical Manager contract delivered through a generated Ch
 Project Bootstrap behavior and its delivery mechanism are distinct. The Manager Skill, Shared Core, and templates own behavior; the generated artifact makes that behavior available where the Plugin Skills are not directly installed.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Cloud and workspace boundary
 
 Cloud-first uses ChatGPT for discovery, project-level decisions, Participation, explanation, and routing. Codex-first begins in a workspace-capable environment and remains equally valid.
@@ -263,15 +275,15 @@ Use Cloud ChatGPT only for facts supported by the conversation or uploaded durab
 Capability available != capability must control the workflow. Having access to Codex does not require a Codex transition when conversation-level work is sufficient, and having the Plugin installed does not require extra lifecycle ceremony.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Codex transition
 
-Move work to Codex only when the accepted next step requires workspace evidence or action. Before the transition, explain to the user what Codex will do, why it is needed, which execution profile is appropriate, what prompt to copy, and what result should return.
+Move work to Codex only when the accepted next step requires workspace evidence or action. Apply the canonical Manager handoff presentation contract to both native and fallback routes. After the prompt, explain in the user's current language what Codex will do, why it is needed, and what result should return.
 
 Use the native route when the destination supports the installed Project Bootstrap Plugin and Skills. Use the fallback route for an ordinary Codex session. Keep both routes bounded to the accepted next step and existing authority.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Native and fallback routing
 
 The native route consists of an environment-specific invocation wrapper followed by the canonical Manager → Master handoff body. The wrapper selects the installed capability; it must not duplicate project handoff fields.
@@ -281,7 +293,7 @@ The fallback route uses the canonical `cloud-to-codex-fallback.md` template. It 
 Choose the route from observed destination capability. If capability is unknown, ask the user to use the fallback route or verify availability without claiming that the Plugin is installed.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Native invocation wrapper
 
 Use this wrapper before the separately rendered canonical Manager → Master body:
@@ -295,7 +307,7 @@ Route the following canonical bootstrap to project-bootstrap-master.
 The project handoff structure comes only from `manager-to-master.md`.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Processing Codex returns
 
 Treat a Codex return as evidence, not as a command to echo. Check whether it answers the requested bounded work, distinguish verified facts from inference or open items, and reconcile it with accepted project decisions.
@@ -305,7 +317,7 @@ Interpret the result for the user in the user's current language even when the C
 If Codex reports a blocker, explain the actual decision or missing authority to the user. If the return establishes durable workspace state, prefer promoting it there over maintaining a competing cloud-only record.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#interim-cloud-continuity sha256=13d780095762448572b47fc8203fb275b526f09e99d2c02bab1f53382c7e8403 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#interim-cloud-continuity sha256=49cdc009352f16e25df06e3a78bc8df599bca1d9dd466bc3b9a4a7b511e2f2d4 -->
 ### Interim cloud continuity
 
 A Project Decision Snapshot is lazy and interim. Offer or create one only when meaningful project-level decisions must survive a change of cloud session and no more appropriate canonical durable workspace state exists.

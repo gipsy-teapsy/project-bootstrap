@@ -202,7 +202,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.5", manifest["version"])
+            self.assertEqual("0.1.6", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -261,6 +261,47 @@ class PackageContractTests(unittest.TestCase):
             "AGENT-FACING → English by default where appropriate", manager
         )
 
+    def test_manager_owns_prompt_first_handoff_presentation_contract(self):
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        cloud = (
+            PLUGIN / "shared" / "references" / "cloud-manager-delivery.md"
+        ).read_text(encoding="utf-8")
+        native = (
+            PLUGIN / "shared" / "templates" / "manager-to-master.md"
+        ).read_text(encoding="utf-8")
+        fallback = (
+            PLUGIN / "shared" / "templates" / "cloud-to-codex-fallback.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+
+        marker = "PROMPT FIRST → USER EXPLANATION AFTER"
+        self.assertEqual(1, manager.count(marker))
+        self.assertEqual(1, artifact.count(marker))
+        self.assertNotIn(marker, cloud)
+
+        presentation = manager.split("### Codex handoff presentation", 1)[1]
+        presentation = presentation.split("\n## ", 1)[0]
+        ordered_slots = (
+            "1. Render the complete Codex-facing prompt.",
+            "2. Continue with the user-facing explanation",
+            "3. Present the execution-profile recommendation",
+        )
+        positions = [presentation.index(slot) for slot in ordered_slots]
+        self.assertEqual(sorted(positions), positions)
+        self.assertIn("user's current language", presentation)
+        self.assertIn("English by default where appropriate", presentation)
+        self.assertIn("material decision or material warning", presentation)
+
+        self.assertIn("both native and fallback routes", cloud)
+        self.assertIn("canonical Manager handoff presentation contract", cloud)
+        for template in (native, fallback):
+            self.assertNotIn("Recommended execution profile:", template)
+            self.assertNotIn("PROMPT FIRST", template)
+
     def test_manager_onboarding_offers_optional_cloud_first_path(self):
         manager = (
             PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
@@ -288,6 +329,7 @@ class PackageContractTests(unittest.TestCase):
         for scenario in (
             "Russian onboarding",
             "Participation",
+            "Russian Codex handoff presentation",
             "Native handoff",
             "Fallback handoff",
             "English Codex return interpretation",

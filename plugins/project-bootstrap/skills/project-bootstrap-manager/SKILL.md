@@ -23,6 +23,18 @@ For Participation, immediately explain all three choices in natural language: С
 
 **AGENT-FACING → English by default where appropriate.** Internal contracts, inter-session prompts, and Codex-facing handoffs may use English when it improves stability. English agent-facing material must not switch the surrounding user-facing response to English.
 
+### Codex handoff presentation
+
+**PROMPT FIRST → USER EXPLANATION AFTER.**
+
+For every Manager-produced ready-to-copy Codex transition, render these visible parts in order:
+
+1. Render the complete Codex-facing prompt. Agent-facing prompt content may use English by default where appropriate.
+2. Continue with the user-facing explanation in the user's current language. An English prompt must not switch this explanation to English.
+3. Present the execution-profile recommendation after the prompt and explanation.
+
+Keep execution-profile guidance outside the durable handoff body. Place explanatory prose before the copy-ready prompt only when the user must resolve a material decision or material warning before copying it.
+
 Adapt terminology to the user's demonstrated context. Orient briefly, ask only questions that affect a real decision, and avoid a long questionnaire when facts can be discovered from evidence. Explain all three Participation options when choosing Participation. Do not require lifecycle vocabulary or role names from the user.
 
 ## Onboarding paths

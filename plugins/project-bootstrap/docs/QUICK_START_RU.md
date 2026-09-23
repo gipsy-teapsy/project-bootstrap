@@ -1,6 +1,6 @@
 # Project Bootstrap — быстрый старт
 
-**Версия Plugin:** 0.1.5
+**Версия Plugin:** 0.1.6
 **Разработчик:** Gipsy
 **Статус:** beta
 
@@ -112,6 +112,8 @@ Manager предлагает переход только тогда, когда 
 
 - **Native path** — в Codex установлен Project Bootstrap Plugin. Cloud Manager даёт короткий invocation wrapper и canonical Manager → Master handoff.
 - **Fallback path** — обычная Codex session без Plugin/Skills. Cloud Manager даёт bounded prompt только для принятой проверки или работы, не копируя весь Project Bootstrap.
+
+Готовый handoff показывается в порядке: полный copy-ready Codex prompt, затем объяснение на текущем языке пользователя, затем отдельная рекомендация execution profile. Рекомендация модели и thinking не входит в durable prompt.
 
 После возврата Codex Manager проверяет evidence и объясняет результат пользователю на его языке. Английский Codex prompt или return не должен переключать весь видимый ответ на английский.
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6 — 2026-09-23
+
+- Made Manager-produced Codex handoffs present the complete copy-ready prompt before user-facing explanation and separate execution-profile guidance.
+- Kept native Manager → Master and bounded fallback prompt schemas canonical and unchanged while applying one shared presentation contract to both routes.
+- Added repository-level LF policy and Windows `core.autocrlf=true` regression coverage so working-tree and commit-based Cloud Manager provenance remain equivalent.
+- Preserved all nine branding assets byte-for-byte and made no Master, Task, role-model, migration, recovery, or public/private release-architecture changes.
+
 ## 0.1.5 — 2026-09-17
 
 - Tuned the packaged Project Bootstrap icon assets to reduce visual saturation while preserving the existing branding, dimensions, transparency, and manifest paths.
