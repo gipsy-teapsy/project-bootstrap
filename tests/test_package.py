@@ -202,7 +202,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.6", manifest["version"])
+            self.assertEqual("0.1.7", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -278,29 +278,98 @@ class PackageContractTests(unittest.TestCase):
             PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
         ).read_text(encoding="utf-8")
 
-        marker = "PROMPT FIRST → USER EXPLANATION AFTER"
-        self.assertEqual(1, manager.count(marker))
-        self.assertEqual(1, artifact.count(marker))
-        self.assertNotIn(marker, cloud)
-
         presentation = manager.split("### Codex handoff presentation", 1)[1]
         presentation = presentation.split("\n## ", 1)[0]
+        order_marker = "PROMPT → RECOMMENDATION → REASON → COMMENTARY"
+        self.assertEqual(1, manager.count(order_marker))
+        self.assertEqual(1, artifact.count(order_marker))
+        self.assertNotIn(order_marker, cloud)
+
         ordered_slots = (
-            "1. Render the complete Codex-facing prompt.",
-            "2. Continue with the user-facing explanation",
-            "3. Present the execution-profile recommendation",
+            "1. Make the complete plain fenced copy-ready Codex prompt the first visible content",
+            "2. Immediately present the recommended model and reasoning effort.",
+            "3. Immediately give one short reason",
+            "4. Only then provide any remaining user-facing commentary",
         )
         positions = [presentation.index(slot) for slot in ordered_slots]
         self.assertEqual(sorted(positions), positions)
         self.assertIn("user's current language", presentation)
         self.assertIn("English by default where appropriate", presentation)
-        self.assertIn("material decision or material warning", presentation)
+        self.assertIn("before declaring the handoff copy-ready", presentation)
+        self.assertIn("no ordinary preamble or label", presentation)
+        self.assertIn("Only a material decision, safety issue, authority boundary", presentation)
 
         self.assertIn("both native and fallback routes", cloud)
         self.assertIn("canonical Manager handoff presentation contract", cloud)
+        self.assertIn("prompt, recommendation, reason, and remaining commentary", cloud)
         for template in (native, fallback):
             self.assertNotIn("Recommended execution profile:", template)
             self.assertNotIn("PROMPT FIRST", template)
+            self.assertNotIn(order_marker, template)
+
+    def test_explanation_request_does_not_implicitly_create_a_handoff(self):
+        manager = (PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        artifact = (PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (manager, artifact):
+            self.assertIn("EXPLANATION REQUEST ≠ HANDOFF REQUEST", text, "missing intent distinction")
+            self.assertIn("answer the explanation/advice completely first", text, "explanation precedence missing")
+            self.assertIn("whether it is critical or work was lost", text, "recovery questions missing")
+            self.assertIn("user asks for a handoff, prompt, or transfer", text, "explicit handoff trigger missing")
+            self.assertIn("necessary to satisfy the requested action", text, "necessary-action trigger missing")
+            self.assertIn("offer a handoff afterwards", text, "optional next step missing")
+            self.assertIn("prompt-first applies only to an actual ready-to-copy handoff", text, "prompt-first scope missing")
+
+    def test_model_presentation_has_exact_tokens_and_evidence_safe_fallback(self):
+        labels = {"LOW": "Низкое", "MEDIUM": "Среднее", "HIGH": "Высокое", "XHIGH": "Очень высокое", "MAX": "Максимальное"}
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            for syntax, reason in (
+                ("<Exact Model Name>", "one short task-specific reason"),
+                ("Конкретная модель не подтверждена", "one short uncertainty explanation"),
+            ):
+                pattern = rf"```text\s*\*\*{re.escape(syntax)} — <Exact Localized Reasoning Label>\*\*\n\n<{reason}[^>]*>\s*```"
+                self.assertTrue(re.search(pattern, text), "recommendation/reason syntax changed")
+            actual_labels = dict(re.findall(r"(?m)^\| (LOW|MEDIUM|HIGH|XHIGH|MAX) \| ([^|]+?) \|$", text))
+            self.assertEqual(labels, actual_labels)
+            for semantic, pattern in {
+                "localized exact token": r"(?i)labels.*?exact localized tokens.*?not free-form prose",
+                "no decorated reasoning": r"(?i)no synonyms.*?English/internal duplicate.*?parenthetical level.*?explanation on the recommendation line",
+                "prompt first, guidance outside": r"(?i)immediately after.*?copy-ready prompt.*?outside the durable.*?handoff body",
+                "explanations do not trigger advice": r"(?i)explanation-only response does not need model advice",
+                "unknown is evidence, not installation": r"(?i)unknown.*?insufficient.*?evidence.*?not uninstalled",
+                "no invented model": r"(?i)never substitute.*?capability-class pseudo-model.*?invent.*?concrete name.*?stale examples/memory",
+                "non-normative syntax": r"(?i)placeholders define syntax.*?not current models or defaults",
+            }.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.S), f"missing static presentation invariant: {semantic}")
+
+    def test_model_reason_applies_shared_plain_language_disclosure(self):
+        # Static delivery guard only; consuming-agent behavior remains a manual gate.
+        requirements = {
+            "existing disclosure owner": r"apply.*?Shared Core user-facing disclosure contract.*?short reason.*?related commentary",
+            "practical work in user language": r"reason.*?actual task work.*?ordinary.*?user.*?language",
+            "classification is not an explanation": r"internal.*?classification.*?inputs.*?not.*?user-facing explanation",
+            "translate before rendering": r"translate.*?practical.*?before.*?render",
+            "standalone meaning": r"remove.*?internal.*?terms.*?reason.*?understandable",
+            "no parallel policy or blacklist": r"no.*?blacklist.*?language-policy subsystem",
+            "user terminology remains valid": r"technical terms.*?user independently.*?useful",
+        }
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8").split("## Presentation\n", 1)[1]
+            for semantic, pattern in requirements.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.I | re.S),
+                                    f"missing model-reason delivery guard: {semantic}")
 
     def test_manager_onboarding_offers_optional_cloud_first_path(self):
         manager = (
@@ -315,6 +384,539 @@ class PackageContractTests(unittest.TestCase):
             "established project work",
         ):
             self.assertIn(marker, manager)
+
+    def test_coordination_compression_has_one_shared_core_owner(self):
+        control = (
+            PLUGIN / "shared" / "references" / "control-model.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+        other_contracts = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md",
+            PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md",
+            PLUGIN / "skills" / "project-bootstrap-task" / "SKILL.md",
+            PLUGIN / "shared" / "references" / "cloud-manager-delivery.md",
+        )
+        markers = (
+            "ONE OWNER → ONE EVIDENCE PACKET → ONE REVIEW",
+            "NO NEW EVIDENCE → NO NEW HANDOFF",
+            "CORRECTNESS > COORDINATION COMPRESSION",
+            "CAPABILITY AVAILABLE ≠ CAPABILITY MUST CONTROL THE WORKFLOW",
+        )
+        for marker in markers:
+            with self.subTest(marker=marker):
+                self.assertEqual(1, control.count(marker))
+                self.assertEqual(1, artifact.count(marker))
+                for path in other_contracts:
+                    self.assertNotIn(marker, path.read_text(encoding="utf-8"))
+
+    def test_external_capabilities_do_not_take_parallel_orchestration_ownership(self):
+        control = (
+            PLUGIN / "shared" / "references" / "control-model.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+        master = (
+            PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        markers = (
+            "CAPABILITY AVAILABLE ≠ CAPABILITY MUST BE USED",
+            "SKILL APPLICABLE ≠ SKILL OWNS WORKFLOW",
+            "METHODOLOGY AVAILABLE ≠ FULL METHODOLOGY REQUIRED",
+            "ONE ORCHESTRATION OWNER AT A TIME",
+        )
+        for marker in markers:
+            with self.subTest(marker=marker):
+                self.assertEqual(1, control.count(marker))
+                self.assertEqual(1, artifact.count(marker))
+
+        decision_order = (
+            "USER INTENT",
+            "COMPLEXITY / RISK / DURABILITY",
+            "SMALLEST SUFFICIENT WORKFLOW",
+            "AVAILABLE CAPABILITIES",
+            "SELECT BOUNDED SPECIALIST OR EXTERNAL WORKFLOW",
+        )
+        for item in decision_order:
+            self.assertIn(item, control)
+        positions = [control.index(item) for item in decision_order]
+        self.assertEqual(sorted(positions), positions)
+        for phrase in (
+            "one bounded stage",
+            "reuse existing specification, plan, task, verification",
+            "return orchestration to Project Bootstrap",
+            "explicitly asks another lifecycle system to own the entire",
+        ):
+            self.assertIn(phrase, control)
+        self.assertIn("bounded specialist capability", master)
+        self.assertIn("reuse existing", master.lower())
+
+    def test_bounded_external_stage_checks_prerequisites_and_user_gates(self):
+        control = (PLUGIN / "shared" / "references" / "control-model.md").read_text(
+            encoding="utf-8"
+        )
+        master = (PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("CAPABILITY SELECTED ≠ STAGE IS EXECUTABLE", control)
+        self.assertRegex(control, r"(?is)before invoking.*?prerequisites.*?when practical")
+        self.assertRegex(control, r"(?is)do not.*?predictably unusable.*?prerequisite failure")
+        self.assertIn("current project state", control)
+        self.assertIn("Reuse a valid prerequisite artifact", control)
+        self.assertIn("substantive prerequisite stage", control)
+        self.assertIn("must not insert a user approval gate merely", control)
+        self.assertIn("Accepted architecture and external artifacts remain usable", control)
+        self.assertRegex(master, r"(?is)before invoking.*?verify that the stage can run")
+        self.assertIn("unnecessary external approval gate", master)
+        self.assertNotIn("Spec Kit", control)
+        self.assertNotIn("Superpowers", control)
+
+    def test_role_is_not_chat_or_mandatory_new_session(self):
+        control = (PLUGIN / "shared" / "references" / "control-model.md").read_text(
+            encoding="utf-8"
+        )
+        manager = (PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        master = (PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        for marker in ("ROLE ≠ CHAT", "TASK ROLE ≠ NEW SESSION REQUIRED"):
+            self.assertEqual(1, control.count(marker))
+        self.assertIn("known from the current context or durable evidence", control)
+        self.assertIn("do not invent an unknown context", control)
+        self.assertIn("physical execution topology only when", control)
+        self.assertIn("rather than asking the user to label a chat", manager)
+        self.assertIn("Reuse a known suitable execution context", master)
+        self.assertNotIn("TASK ≠ SUBAGENT", control)
+
+    def test_normal_task_result_is_not_durable_handoff_terminology(self):
+        task = (
+            PLUGIN / "skills" / "project-bootstrap-task" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        master = (
+            PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        recovery = (
+            PLUGIN / "shared" / "references" / "recovery-and-continuity.md"
+        ).read_text(encoding="utf-8")
+        handoff = (
+            PLUGIN / "shared" / "templates" / "task-handoff.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("NORMAL TASK RESULT ≠ DURABLE HANDOFF", recovery)
+        self.assertNotIn("hand off only after convergence", task)
+        self.assertIn("return the normal Task result", task)
+        self.assertIn("Task results, checkpoints, and durable handoffs", master)
+        self.assertIn("Do not label a normal Task response as a Handoff", handoff)
+
+    def test_agent_generated_terminology_is_translated_for_the_user(self):
+        control = (
+            PLUGIN / "shared" / "references" / "control-model.md"
+        ).read_text(encoding="utf-8")
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("translate the meaning into ordinary language", control)
+        self.assertIn("Do not mirror agent-generated terminology", control)
+        self.assertRegex(
+            control,
+            r"(?is)plain-language meaning.*?practical consequence.*?source/internal terminology",
+        )
+        self.assertIn("understandable without Bootstrap vocabulary", control)
+        self.assertIn("another agent", control)
+        self.assertIn("logs or a technical report", control)
+        self.assertIn("translate agent-generated terminology", manager)
+        self.assertIn("internal term secondarily", manager)
+
+    def test_primary_explanation_and_action_are_plain_before_optional_mapping(self):
+        control = (PLUGIN / "shared" / "references" / "control-model.md").read_text(
+            encoding="utf-8"
+        )
+        artifact = (PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (control, artifact):
+            with self.subTest(contract="control" if text == control else "artifact"):
+                self.assertIn("SOURCE JARGON ≠ USER LANGUAGE", text)
+                slots = (
+                    "1. Plain meaning:",
+                    "2. Plain practical action:",
+                    "3. Technical mapping only if useful:",
+                )
+                positions = [text.index(slot) for slot in slots]
+                self.assertEqual(sorted(positions), positions)
+                self.assertIn("complete primary explanation and primary next action", text)
+                self.assertIn("remove all Bootstrap/internal terms", text)
+                self.assertIn("what happened, why work stopped, and what needs to happen next", text)
+                self.assertIn("rewrite the explanation and action before adding technical mapping", text)
+                self.assertIn("Do not ban technical terminology", text)
+                self.assertIn("no Bootstrap internal terminology in either primary part", text, "jargon boundary missing")
+                self.assertIn("short quote or term is genuinely necessary to identify the source", text, "source-identification exception missing")
+                self.assertIn("whether anything is known to be lost or broken", text, "loss/uncertainty question missing")
+                self.assertIn("check the actual files, inspect current Git state", text, "plain practical action missing")
+
+    def test_current_codex_snapshot_is_established_once_before_recommendation(self):
+        # Static contract guards; consuming-agent tests remain a separate runtime gate.
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            requirements = {
+                "first concrete advice checks once": r"recommendation is needed.*?no applicable accepted snapshot.*?ONE bounded current Codex check",
+                "current target lineup, not one model page": r"first-party OpenAI.*?Codex / Work\+Codex.*?current lineup.*?not.*?one model.*?exhaustive catalog",
+                "small usable bands": r"3-5 practical.*?bands.*?concrete current model.*?default supported reasoning.*?optional.*?escalation",
+                "no forced model diversity": r"three or four.*?sufficient.*?same model.*?several or all bands.*?different models",
+                "user facts outrank general sources": r"sources conflict.*?actual.*?selector/list/screenshot.*?highest priority",
+                "fresh target sources then generation": r"without user data.*?materially fresher target-specific.*?comparably fresh.*?newer generation.*?general snapshot",
+                "supported older isn't default": r"older supported.*?not.*?default.*?available.*?older model.*?user.*?newer.*?unavailable.*?material.*?task-specific",
+                "new generation isn't universally best": r"newer generation.*?not.*?best for every task.*?lineup.*?assign bands",
+                "accept before advice": r"accept the snapshot BEFORE recommending.*?current task from it",
+                "first advice needs no selector": r"general snapshot is usable immediately.*?no selector.*?before the first recommendation",
+                "explicit mandatory invitation once": r"MUST explicitly invite.*?ONCE.*?first general snapshot.*?first usable recommendation.*?list.*?selector screenshot",
+                "invite does not block": r"invitation.*?must not block.*?handoff.*?do not repeat.*?later handoffs",
+                "compact commentary outside prompt": r"show.*?snapshot once.*?commentary.*?prompt.*?recommendation.*?short reason.*?outside the durable.*?prompt",
+            }
+            for semantic, pattern in requirements.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.S | re.I), semantic)
+
+    def test_snapshot_default_bands_stay_in_primary_lineup_unless_justified(self):
+        # Static contract guard, not proof of consuming-agent runtime behavior.
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            for semantic, pattern in {
+                "closed default set": r"default.*?snapshot bands.*?models from.*?primary lineup",
+                "positive exception required": r"older.*?default band only.*?positive.*?reason.*?actual.*?options.*?primary option.*?unavailable.*?current.*?comparative.*?prefer",
+                "mere support/page is not an exception": r"existence.*?support.*?separate official page.*?not.*?exception reason",
+            }.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.I | re.S), semantic)
+
+    def test_known_user_availability_satisfies_selector_invitation(self):
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            for semantic, pattern in {
+                "known availability satisfies invitation": r"user-specific.*?availability.*?already known.*?invitation.*?satisfied.*?list.*?screenshot.*?actual.*?set",
+                "personalize and reuse without asking again": r"create or refine.*?personal snapshot.*?reuse.*?later handoffs.*?do not.*?invite.*?list.*?screenshot again",
+                "only availability invalidation permits another request": r"request again only after\s+concrete availability invalidation.*?changed selector.*?added/removed models.*?explicit.*?refresh",
+                "no invitation tracking subsystem": r"no separate.*?state machine.*?state file",
+            }.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.I | re.S), semantic)
+
+    def test_model_short_reason_localizes_level_explanation_not_english_reasoning(self):
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8").split("## Presentation\n", 1)[1]
+            for semantic, pattern in {
+                "localized short reason level explanation": r"non-English.*?short reason.*?localize.*?level.*?do not use.*?English.*?`reasoning`.*?explanation",
+                "narrow rule, not general blacklist": r"narrow.*?model-reason.*?rendering rule.*?not.*?general.*?blacklist",
+            }.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.I | re.S), semantic)
+
+    def test_later_handoffs_use_snapshot_bands_until_concrete_invalidation(self):
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            requirements = {
+                "classify then consume band": r"CLASSIFY TASK.*?ACCEPTED BAND.*?USE ITS MODEL.*?SUFFICIENT SUPPORTED REASONING.*?RECOMMEND",
+                "no repeat research or re-selection": r"do not.*?model research.*?documentation.*?compare models.*?general model knowledge.*?fresh external.*?facts",
+                "task reason derives from band": r"reason.*?task.*?accepted band",
+                "specific invalidation only": r"refresh only.*?concrete invalidation.*?unavailable model.*?list.*?screenshot.*?new models.*?explicit refresh.*?destination.*?concrete.*?non-applicability",
+                "task/time alone aren't invalidation": r"another handoff.*?difficulty change.*?new message.*?elapsed time.*?hypothetical.*?not invalidation.*?No TTL.*?polling.*?per-handoff research",
+            }
+            for semantic, pattern in requirements.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.S | re.I), semantic)
+
+    def test_snapshot_overrides_opt_out_and_last_resort_fallback_remain(self):
+        for path in (
+            PLUGIN / "shared" / "references" / "execution-profiles.md",
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md",
+        ):
+            text = path.read_text(encoding="utf-8")
+            requirements = {
+                "advice without magic words": r"ready-to-copy Codex handoff.*?unless.*?opted out.*?no explicit model question",
+                "reuse available context": r"conversation.*?ChatGPT Project.*?durable.*?runtime.*?without.*?repeat",
+                "personal options replace general": r"user.*?list.*?screenshot.*?refine or replace.*?general snapshot.*?only.*?actually available.*?personal snapshot",
+                "single-model override": r"only one model.*?usable bands.*?reasoning independently",
+                "opt-out preserves handoff": r"suppress model advice until.*?reverses.*?handoffs continue",
+                "fallback only after failed check and clarification": r"unknown-model fallback only when.*?recommendation.*?no accepted snapshot.*?ONE bounded check failed.*?usable.*?small useful clarification cannot resolve.*?invention",
+                "unknown selector alone never fallback": r"last resort.*?not.*?unknown exact selector",
+            }
+            for semantic, pattern in requirements.items():
+                with self.subTest(path=path.name, semantic=semantic):
+                    self.assertTrue(re.search(pattern, text, re.S | re.I), semantic)
+        manager = (PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("omit recommendation and reason, not the handoff", manager)
+
+    def test_current_codex_snapshot_policy_does_not_freeze_a_catalog(self):
+        profile = (PLUGIN / "shared" / "references" / "execution-profiles.md").read_text(encoding="utf-8")
+        self.assertNotRegex(profile, r"https?://|(?i:\bGPT-[\dX-Z]|\b(?:Plus|Pro|Business|Enterprise)\b)")
+        self.assertNotRegex(profile, r"(?i)\bgeneration\s+\d")
+        self.assertRegex(profile, r"(?is)no permanent model names.*?rankings.*?URLs.*?plan names.*?registry.*?mandatory.*?file")
+
+    def test_cloud_local_mutable_workspace_routes_to_codex_by_default(self):
+        cloud = (
+            PLUGIN / "shared" / "references" / "cloud-manager-delivery.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+        for text in (cloud, artifact):
+            self.assertIn("Cloud Manager → Codex", text)
+            self.assertIn("exact required workspace", text)
+            self.assertIn("Do not suggest ChatGPT Work as an exploratory intermediate hop", text)
+            self.assertIn("direct Cloud → Codex", text)
+
+    def test_copy_ready_prompt_uses_plain_fenced_text_presentation(self):
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+        for text in (manager, artifact):
+            section = text.split("Codex handoff presentation", 1)[1]
+            section = section.split("\n## ", 1)[0]
+            self.assertIn("plain fenced `text` block", section)
+            self.assertIn("```text", section)
+            self.assertIn("writing blocks", section)
+            self.assertIn("durable documents", section)
+            self.assertIn("first visible content", section)
+
+    def test_new_project_discovery_is_incremental_before_solutioning(self):
+        control = (
+            PLUGIN / "shared" / "references" / "control-model.md"
+        ).read_text(encoding="utf-8")
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        for phrase in (
+            "most important unknown about the desired outcome",
+            "Usually ask one primary question at a time",
+            "small tightly coupled group",
+            "architecture, stack, tooling, repository layout, or release process",
+        ):
+            self.assertIn(phrase, control)
+        self.assertIn("incremental discovery", manager)
+        self.assertIn("premature implementation choices", manager)
+        self.assertIn("Across new, portable, and migration work", control)
+        self.assertIn("determining facts are known or the choice is already accepted", control)
+        self.assertIn("“portable” alone does not determine", control)
+
+    def test_participation_question_is_about_project_development(self):
+        manager = (PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("decisions about developing the project", manager)
+        self.assertIn("not in using the future product", manager)
+        for option in ("Совместно", "По ключевым решениям", "Делегированно"):
+            self.assertIn(option, manager)
+
+    def test_cloud_artifact_supports_chat_attachment_and_project_source(self):
+        cloud = (
+            PLUGIN / "shared" / "references" / "cloud-manager-delivery.md"
+        ).read_text(encoding="utf-8")
+        artifact = (
+            PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
+        ).read_text(encoding="utf-8")
+        quick = (
+            PLUGIN / "docs" / "QUICK_START_RU.md"
+        ).read_text(encoding="utf-8")
+        for text in (cloud, artifact, quick):
+            self.assertIn("Option A", text)
+            self.assertIn("chat attachment", text)
+            self.assertIn("Option B", text)
+            self.assertIn("ChatGPT Project source", text)
+        self.assertIn("one-off use", cloud)
+        self.assertIn("ongoing project work", cloud)
+        self.assertIn("рекомендуемый путь", cloud)
+        self.assertIn("нескольких чатах", quick)
+        self.assertIn("Codex-first", quick)
+
+    def test_task_results_are_required_while_durable_artifacts_remain_lazy(self):
+        task = (
+            PLUGIN / "skills" / "project-bootstrap-task" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        recovery = (
+            PLUGIN / "shared" / "references" / "recovery-and-continuity.md"
+        ).read_text(encoding="utf-8")
+        handoff = (
+            PLUGIN / "shared" / "templates" / "task-handoff.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Every separate Task returns a usable result", task)
+        self.assertIn("PASS, FAIL, NOT TESTED, OPEN, or BLOCKED", task)
+        self.assertIn("normal Task result is evidence for Master Review", recovery)
+        self.assertIn("does not require a durable Handoff artifact", recovery)
+        self.assertIn("For short work, return the result in the normal response", handoff)
+        self.assertIn("durable completed cross-role result", handoff)
+
+    def test_master_review_compresses_coordination_without_hiding_misses(self):
+        master = (
+            PLUGIN / "skills" / "project-bootstrap-master" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        for marker in (
+            "review the complete available result",
+            "one consolidated correction request",
+            "review miss",
+            "Correct the gap rather than leaving the project incorrect",
+            "current access",
+            "existing authority",
+            "safe and trivial",
+            "does not require implementation or correction",
+            "one-active-writer boundary",
+            "directly observable",
+            "cheaper and clearer",
+        ):
+            self.assertIn(marker, master)
+
+    def test_user_expertise_requires_user_attributed_evidence(self):
+        control = (
+            PLUGIN / "shared" / "references" / "control-model.md"
+        ).read_text(encoding="utf-8")
+        evidence = (
+            PLUGIN / "shared" / "references" / "evidence-and-authority.md"
+        ).read_text(encoding="utf-8")
+        manager = (
+            PLUGIN / "skills" / "project-bootstrap-manager" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        marker = "AGENT-GENERATED TERMINOLOGY IS NOT EVIDENCE OF USER EXPERTISE"
+        self.assertEqual(1, control.count(marker))
+        self.assertIn("user-attributed or user-accepted communication preference", evidence)
+        self.assertIn("unclear provenance", evidence)
+        self.assertIn("asks what a term means", control)
+        self.assertIn("Shared Core user-facing disclosure contract", manager)
+
+    def test_portable_credentials_are_gated_and_reuse_accepted_strategy(self):
+        environments = (
+            PLUGIN
+            / "shared"
+            / "references"
+            / "environments-git-portable-migration.md"
+        ).read_text(encoding="utf-8")
+        evidence = (
+            PLUGIN / "shared" / "references" / "evidence-and-authority.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("NO PORTABILITY NEED → NO PORTABLE CREDENTIALS WORKFLOW", environments)
+        self.assertIn("NO AUTHENTICATED SERVICE → NO CREDENTIAL STORAGE DISCUSSION", environments)
+        self.assertIn("credential availability or placement affects the next work", environments)
+        self.assertIn("still-applicable accepted credential strategy", environments)
+        self.assertIn("credentials configured separately on each machine", environments)
+        self.assertIn(
+            "credentials stored with the portable working environment but outside Git",
+            environments,
+        )
+        self.assertIn("Do not standardize an encrypted credential store", environments)
+        self.assertIn("Do not silently collapse", environments)
+        self.assertIn("Participation", environments)
+        self.assertIn("Never persist credentials", evidence)
+
+    def test_targeted_runtime_gate_records_user_accepted_pass_without_blanket_pass(self):
+        testing = (ROOT / "docs" / "TESTING.md").read_text(encoding="utf-8")
+        scenarios = (
+            "Cloud: first-use auto-establish",
+            "Cloud: reuse after auto-establish",
+            "Cloud: normal engineering reuse",
+            "Spec Kit: missing prerequisite",
+            "Spec Kit: satisfied-prerequisite control",
+        )
+        targeted = testing.split("## Targeted 0.1.7 runtime regression", 1)[1]
+        targeted = targeted.split("## Behavioral lifecycle", 1)[0]
+        self.assertEqual(len(scenarios), len(re.findall(r"(?m)^### ", targeted)))
+        for scenario in scenarios:
+            with self.subTest(scenario=scenario):
+                block = re.search(
+                    rf"(?ms)^### {re.escape(scenario)}\s*$"
+                    rf"(?P<body>.*?)(?=^### |^## |\Z)",
+                    targeted,
+                )
+                self.assertIsNotNone(block, f"missing targeted scenario: {scenario}")
+                if scenario.startswith("Cloud:"):
+                    self.assertIn("Status: PASS", block.group("body"))
+                    self.assertIn("user-reported", block.group("body"))
+                    self.assertNotIn("READY FOR TARGETED RERUN", block.group("body"))
+                else:
+                    self.assertIn("Status: PASS", block.group("body"))
+                    self.assertNotIn("READY FOR TARGETED RERUN", block.group("body"))
+        self.assertIn("model-guidance selection/reuse/refresh behavior accepted", testing)
+        self.assertIn("INVALID UX EXPECTATION", testing)
+        self.assertIn("Exactly three Cloud scenarios formed the accepted runtime gate", targeted)
+        self.assertIn("Model-guidance: CLOSED", targeted)
+        self.assertIn("No new Cloud runtime was performed in this release task", targeted)
+        self.assertIn("Run B/C only after A PASS", targeted)
+        self.assertIn("preserve the visible sources", targeted)
+        self.assertIn("strict known-model presentation where demonstrated", testing)
+        self.assertIn("BLOCKED_BY_MISSING_INPUT is correct behavior", testing)
+        self.assertIn("Historical SEO Daemon regression evidence", testing)
+        self.assertIn("not that subagents are invalid", testing)
+        self.assertIn("outside the user-authorized workspace", testing)
+        self.assertIn("Ask before creating a harness root", testing)
+        self.assertIn("PB-017-Final-SpecKit-Harness-20261003-165946-993e1d", testing)
+        self.assertIn("ENVIRONMENT BLOCKER", testing)
+        self.assertIn("NO behavioral evidence", testing)
+
+    def test_task_policy_references_do_not_require_repeated_metadata(self):
+        task_prompt = (
+            PLUGIN / "shared" / "templates" / "master-to-task.md"
+        ).read_text(encoding="utf-8")
+        for marker in (
+            "stable canonical policy location is sufficient",
+            "revision or version only when",
+            "minimum necessary excerpt",
+            "task-specific deviation",
+            "Do not add an empty policy metadata block",
+        ):
+            self.assertIn(marker, task_prompt)
+
+    def test_execution_profile_is_current_localized_and_outside_handoff(self):
+        profile = (
+            PLUGIN / "shared" / "references" / "execution-profiles.md"
+        ).read_text(encoding="utf-8")
+        native = (
+            PLUGIN / "shared" / "templates" / "manager-to-master.md"
+        ).read_text(encoding="utf-8")
+        fallback = (
+            PLUGIN / "shared" / "templates" / "cloud-to-codex-fallback.md"
+        ).read_text(encoding="utf-8")
+        self.assertRegex(profile, r"(?is)accept the snapshot BEFORE recommending.*?current task from it")
+        self.assertNotIn("exact current model availability is known", profile)
+        self.assertIn("user's current language", profile)
+        self.assertIn("Keep actual product and model names unchanged", profile)
+        self.assertRegex(profile, r"(?is)model selection.*?reasoning effort.*?separate decisions")
+        self.assertIn("lowest sufficient current model", profile)
+        self.assertIn("independently from model choice", profile)
+        reasoning = profile.split("## Reasoning effort", 1)[1].split("## Presentation", 1)[0]
+        for semantic, pattern in {
+            "LOW mechanical": r"LOW — mechanical reading.*?extraction.*?bounded inspection",
+            "MEDIUM engineering": r"MEDIUM — ordinary implementation.*?engineering.*?local debugging.*?bounded review",
+            "HIGH reconciliation": r"HIGH — architecture.*?difficult debugging.*?repository-wide review.*?recovery/reconciliation.*?conflicting evidence.*?verification",
+            "exceptional escalation": r"XHIGH / MAX — exceptional escalation only.*?never routine.*?model support.*?material task justification",
+            "no scoring or model-effort coupling": r"not a scoring engine.*?stronger model does not require higher effort",
+        }.items():
+            with self.subTest(semantic=semantic):
+                self.assertTrue(re.search(pattern, reasoning, re.S), f"missing reasoning semantics: {semantic}")
+        self.assertNotRegex(profile, r"(?i)\bGPT-\d")
+        guide = (PLUGIN / "docs" / "USER_GUIDE_RU.md").read_text(encoding="utf-8")
+        profile_guide = guide.split("## 24. Execution profile", 1)[1].split("## 25.", 1)[0]
+        self.assertNotRegex(profile_guide, r"(?i)\bGPT-\d")
+        for template in (native, fallback):
+            self.assertNotRegex(template, r"(?i)\bGPT-\d")
+            self.assertNotIn("Recommended execution profile", template)
 
     def test_cloud_manager_language_guard_and_behavioral_status(self):
         artifact = (PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md").read_text(
@@ -337,13 +939,54 @@ class PackageContractTests(unittest.TestCase):
         ):
             self.assertIn(scenario, testing)
         self.assertIn(
-            "Cloud Manager: initial manual smoke tested; broader behavioral "
-            "testing continues during beta.",
+            "Cloud Manager: accepted targeted behavioral evidence retained; "
+            "current Codex snapshot A/B/C PASS — user-reported; model-guidance CLOSED.",
+            testing,
+        )
+        self.assertIn(
+            "Codex Plugin runtime: accepted targeted testing completed, including "
+            "both final Spec Kit prerequisite reruns; broader lifecycle incomplete.",
             testing,
         )
         self.assertIsNone(
             re.search(r"(?i)Cloud Manager behavioral\s*:\s*PASS", testing)
         )
+
+    def test_coordination_compression_scenarios_remain_not_tested(self):
+        testing = (ROOT / "docs" / "TESTING.md").read_text(encoding="utf-8")
+        scenarios = (
+            "Short Task result without durable Handoff",
+            "Durable continuity for long work",
+            "Complete result without redundant follow-up",
+            "Consolidated visible gaps",
+            "New evidence justifies another cycle",
+            "Master review miss is corrected",
+            "No avoidable repeat without new evidence",
+            "Direct trivial verification",
+            "Durable evidence instead of retelling",
+            "Small work uses the smallest workflow",
+            "User-attributed preference survives sessions",
+            "Agent-generated terminology does not imply expertise",
+            "Clarification lowers technical density",
+            "Stable policy reference without revision metadata",
+            "Revision metadata for stale-policy risk",
+            "Portable credentials relevance gate",
+            "Accepted credential strategy is reused",
+            "Material credential change reopens the decision",
+            "Russian copy-ready handoff order",
+            "Model guidance stays outside the durable prompt",
+            "Unknown model availability uses canonical fallback",
+            "Durable policy is referenced instead of copied",
+        )
+        for scenario in scenarios:
+            with self.subTest(scenario=scenario):
+                block = re.search(
+                    rf"(?ms)^### {re.escape(scenario)}\s*$"
+                    rf"(?P<body>.*?)(?=^### |^## |\Z)",
+                    testing,
+                )
+                self.assertIsNotNone(block, f"missing behavioral scenario: {scenario}")
+                self.assertIn("Status: NOT TESTED", block.group("body"))
 
     def test_master_skill_frontmatter_and_links(self):
         self._assert_skill("project-bootstrap-master")

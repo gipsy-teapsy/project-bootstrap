@@ -30,7 +30,9 @@ Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но 
 
 Это отдельный способ доставки того же Manager contract для ChatGPT Project, где нельзя полагаться на прямую доступность Plugin Skills.
 
-Один раз при создании Project:
+Для one-off use или тестирования прикрепите [CHATGPT_CLOUD_MANAGER.md](../plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md) прямо к отдельному conversation и попросите чат использовать его как Manager contract.
+
+Для продолжающейся работы через ChatGPT Project:
 
 1. Создайте ChatGPT Project.
 2. Скачайте [CHATGPT_CLOUD_MANAGER.md](../plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md) из опубликованной версии.
@@ -38,7 +40,7 @@ Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но 
 4. Скопируйте только короткий activation stub из раздела **Project Instructions** artifact в Project Instructions.
 5. Начните описывать проект обычными словами на своём языке.
 
-Полный artifact или большой prompt в Project Instructions копировать не нужно. Cloud Manager не является четвёртой ролью и не заменяет Master/Task в workspace.
+Полный artifact или большой prompt в Project Instructions копировать не нужно. Attachment удобнее для одного чата, Project source — для нескольких cloud chats. Ни один способ не является обязательным. Cloud Manager не является четвёртой ролью и не заменяет Master/Task в workspace.
 
 ## Обновление
 
@@ -48,4 +50,4 @@ Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но 
 
 ## Ограничения текущей версии
 
-Версия 0.1.6 не содержит MCP, Apps, OAuth или backend. Наличие Cloud Manager artifact не доказывает доступность Plugin Skills в конкретной Cloud/Codex среде. Cloud Manager прошёл начальное ручное smoke testing; расширенный документированный behavioral suite продолжается в beta. ChatGPT marketplace Sync, доступность Plugin в Codex и полный behavioral lifecycle не заявлены как пройденные.
+Версия 0.1.7 не содержит MCP, Apps, OAuth или backend. Наличие Cloud Manager artifact не доказывает доступность Plugin Skills в конкретной Cloud/Codex среде. Cloud Manager прошёл начальное ручное smoke testing; новые сценарии Coordination Compression и расширенный behavioral suite остаются `NOT TESTED` до отдельного runtime testing. ChatGPT marketplace Sync, доступность Plugin в Codex и полный behavioral lifecycle не заявлены как пройденные.

@@ -20,6 +20,10 @@ Use AUDIT and NO CHANGE where appropriate. A Task Branch proposes; Master govern
 
 Authority is claim-specific. Git is authoritative for Git objects and history; a live observation describes one environment at one time; accepted records define intent or policy within their scope. Reconcile the exact claim by scope, version, environment, freshness, and source authority.
 
+## Communication preference provenance
+
+A user-attributed or user-accepted communication preference may be promoted into durable project knowledge, for example a preference for simple explanations or comfort with Git terminology. Agent-generated terminology, prompts, summaries, and internal contracts are not evidence of user expertise. If a preference has unclear provenance, do not use it to increase the user's assumed technical level.
+
 ## Action authority
 
 Keep permission levels separate:

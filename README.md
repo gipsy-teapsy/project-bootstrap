@@ -8,7 +8,7 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.6 is a plugin beta. It makes Manager-produced Codex handoffs prompt-first and adds Windows-safe LF provenance handling without changing the Manager/Master/Task role model, control model, or durable handoff schemas. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Cloud Manager: initial manual smoke tested; broader behavioral testing continues during beta. Marketplace Sync, Codex Plugin runtime testing, and the broader behavioral lifecycle remain separate and are not claimed as passed.
+Version 0.1.7 is a plugin beta focused on Coordination Compression and runtime-driven UX corrections: complete evidence review, consolidated correction requests, one active orchestration owner, bounded use of external capabilities, normal Task results without mandatory durable Handoffs, progressive disclosure, direct Cloud-to-Codex local-workspace routing, incremental discovery, gated portable-credential decisions, and a plain-text prompt → recommendation → reason → commentary handoff order. It does not add a role, visible mode, subsystem, lifecycle state, or public file. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Final model-guidance A/B/C passed in user-reported fresh Cloud runtime; broader behavioral testing continues separately. Marketplace Sync is verified separately from Git publication.
 
 ## Documentation
 
@@ -18,7 +18,12 @@ Keep **Manager**, **Master**, and **Task** enabled in Plugin-capable environment
 - [Detailed Russian user guide](plugins/project-bootstrap/docs/USER_GUIDE_RU.md)
 - [Generated ChatGPT Cloud Manager artifact](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md)
 
-Cloud-first setup:
+Cloud-first one-off setup:
+
+1. Download [CHATGPT_CLOUD_MANAGER.md](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md).
+2. Attach it to one ChatGPT conversation and ask the chat to use it as the Manager contract.
+
+Cloud-first ongoing Project setup:
 
 1. Create a ChatGPT Project.
 2. Download [CHATGPT_CLOUD_MANAGER.md](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md).
@@ -26,7 +31,7 @@ Cloud-first setup:
 4. Copy only its short activation stub into Project Instructions.
 5. Start describing the project in natural language.
 
-Do not copy the full artifact into Project Instructions. For Codex-first use, keep using the installed Plugin Skills directly. When Project Bootstrap is updated, replace the uploaded artifact with the new released file.
+Do not copy the full artifact into Project Instructions. Neither Cloud method is universally mandatory: attachment suits one-off/testing work, while a Project source suits several cloud chats. For Codex-first use, keep using the installed Plugin Skills directly. When Project Bootstrap is updated, replace the uploaded artifact with the new released file.
 
 ## Install from the GitHub marketplace
 

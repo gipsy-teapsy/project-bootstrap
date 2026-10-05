@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.1.7 — 2026-09-25
+
+- Added Coordination Compression rules: one complete evidence review, consolidated visible gaps, no redundant retelling, and correctness-preserving follow-up cycles.
+- Distinguished every Task's required normal result from lazy durable Task State, Checkpoint, and Handoff artifacts.
+- Strengthened smallest-sufficient workflow selection and progressive disclosure without adding a mode, role, subsystem, lifecycle state, or artifact type.
+- Added provenance rules for user communication preferences and gated portable-credential strategy selection with exactly two supported conceptual strategies.
+- Changed copy-ready Codex handoff presentation to prompt → recommendation → localized reason → remaining commentary while keeping model guidance outside durable prompts.
+- Added static regressions and a broader behavioral matrix. Accepted Cloud, Superpowers, final Spec Kit prerequisite reruns, and combined runtime evidence covers a tested subset; earlier targeted plans remain historical, not a blanket behavioral PASS.
+- Added generic arbitration so installed skills, plugins, and methodologies remain bounded capabilities unless the user explicitly delegates a stage or the full workflow.
+- Prevented external lifecycle defaults from silently reintroducing redundant design, approval, planning, or review stages over an accepted Bootstrap workflow.
+- Strengthened normal Task result terminology, translation of agent-generated technical language, direct Cloud-to-Codex local-workspace routing, incremental discovery, and portable-credential choice handling.
+- Specified plain fenced-text copy-ready prompts and documented both one-chat attachment and ongoing ChatGPT Project source delivery for the generated Cloud Manager.
+- Prepared focused Cloud and external-workflow runtime regressions without claiming those corrected scenarios PASS before rerun.
+- Tightened copy-ready prompt-first delivery, Participation wording, local-workspace routing, and discovery so concrete architecture follows determining evidence.
+- Clarified role versus chat/session and required bounded external stages to be executable without silently adding substantive prerequisites or default approval gates.
+- Recommended a ChatGPT Project source for persistent Cloud use, retained one-chat attachment and Codex-first onboarding, and documented authorization for runtime test harnesses.
+- Required practical prerequisite checks before external-stage invocation, separated current model selection from reasoning effort without a version-pinned default, and ordered external-report explanations as meaning → practical action → useful source terminology.
+- Required complete plain-language explanation and action before optional technical mapping; separated stable model-selection policy from reusable, destination-scoped current guidance, with evidence-triggered refresh, optional cost/usage, a small reasoning ladder, and stable recommendations for similar work. Later runtime accepted guidance reuse, task-sensitive levels, no repeated research, evidence-triggered reassessment without automatic promotion of an unknown new model, and reuse after refresh.
+- Scoped prompt-first to actual handoff requests/actions, excluded unnecessary Bootstrap jargon from primary explanation/action, and normalized exact model/reasoning presentation with an evidence-safe unknown-model label. Historical five-case expectations are retained; strict known-model presentation is accepted where demonstrated, without claiming unreported cases PASS.
+- Corrected first-use model guidance: when a concrete recommendation is needed and no applicable guidance exists, establish a small current Codex ladder once from bounded reliable evidence, recommend, then reuse. User-specific evidence overrides general guidance; unknown plan is not a default blocker, model-advice opt-out preserves handoffs, and unknown fallback is last resort after failed refresh and unresolved useful clarification. The old immediate-fallback expectation is recorded as invalid UX evidence. Later runtime confirmed bounded refresh, concrete advice without a user inventory, task-sensitive reasoning, and strict presentation; A was PARTIAL PASS for incomplete reusable guidance, B failed model derivability despite correct LOW effort and no second research.
+- Required guidance-first refresh completion before task-specific selection: cover normal/default, escalation, and mechanical work as current evidence supports, without requiring different models or inventing distinctions. Later concrete-model transitions must derive from accepted mappings/tradeoffs or new relevant evidence. The established reuse/refresh/opt-out/last-resort/presentation architecture remains unchanged; three sequential post-correction Cloud scenarios (complex, mechanical, normal) remain OPEN.
+
+- Required claim-specific target-valid evidence before accepting refreshed Codex guidance: current availability/applicability/role must be grounded in Codex or Work+Codex evidence, with user-specific selector evidence strongest. General model documentation may supplement capability comparisons after target applicability is established; official authorship or a Codex mention alone is insufficient. Preserved guidance-first completion, reuse, event-driven refresh, reasoning, and presentation without hardcoded URLs/model ladders/bans. Latest Candidate A failed source admissibility; B is downstream invalid-guidance reuse and C cannot close that finding. Positive sub-evidence and historical failures remain recorded; three target-valid A/B/C reruns stay OPEN, with no post-correction runtime PASS claimed.
+
+- Compressed the model-guidance runtime contract into one algorithm and removed duplicated policy wording. Required current target-level Codex candidate-set establishment before decision-relevant comparison; availability alone does not establish preference or a ladder role. Preserved accepted evidence/reuse/override/fallback/reasoning/presentation semantics without permanent model names, rankings, URLs, or a new subsystem. Historical lessons remain in TESTING; the same independent A/B/C rerun remains OPEN.
+- Tightened current Codex candidate-set reconciliation before comparative recommendations and prevented premature unknown fallback solely for an unknown exact selector/account. Preserved the compressed contract, availability-versus-preference boundary, ready-handoff advice without an explicit model question, and derivable reuse without a model catalog or new subsystem.
+- Operationalized compact model guidance as one ordered procedure, made fresh reusable mappings observable once, and prevented independent model reselection while accepted guidance applies; no new selection subsystem or permanent model catalog.
+- Replaced accumulated model-selection policy with one reusable current Codex snapshot: check models only when missing or invalidated; later handoffs classify into accepted bands instead of independently reselecting models. Preserved user overrides/opt-out, independent reasoning, last-resort fallback and strict presentation; no new subsystem.
+- Tightened first-snapshot conflicts: prefer materially fresher target-specific Codex evidence, then newer generation when comparably fresh; older supported models remain alternates. Offer optional selector/screenshot refinement after the first usable snapshot, without hardcoded model names or generation numbers.
+- Simplified reusable current Codex snapshots: fresher/newer target-specific official evidence resolves general-source conflicts, actual user availability refines the snapshot, and Manager explicitly asks once for an optional list/selector screenshot after the first usable recommendation; later handoffs reuse accepted bands without model research.
+
+- Applied the existing user-facing disclosure contract to short model recommendation reasons: explain actual task work in ordinary user language rather than internal execution-profile classifications.
+
+- Closed default snapshot bands over the current primary lineup unless a positive exception is justified, treated already supplied user availability as satisfying the selector invitation, and localized level explanations in short model reasons. Latest runtime accepted snapshot creation/B/C reuse but exposed these three bounded regressions; post-correction runtime remains OPEN.
+
+- Recorded user-accepted fresh Cloud A/B/C PASS for the final 0.1.7 candidate and closed model-guidance; historical failures remain documented and broader behavioral testing remains separate.
+
 ## 0.1.6 — 2026-09-23
 
 - Made Manager-produced Codex handoffs present the complete copy-ready prompt before user-facing explanation and separate execution-profile guidance.
@@ -51,4 +88,4 @@
 - Added portable Agent Plugins 1.0 and Codex compatibility manifests.
 - Added repo marketplace metadata and static validators.
 
-Runtime marketplace and behavioral lifecycle validation remain not tested.
+Dedicated marketplace validation remains not tested. Broader end-to-end behavioral lifecycle validation remains incomplete beyond the accepted targeted runtime coverage above.

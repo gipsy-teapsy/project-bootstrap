@@ -4,7 +4,15 @@ This reference defines only the ChatGPT Project delivery layer for the canonical
 
 ## User setup
 
-Для Cloud-first работы создайте ChatGPT Project и загрузите в него только сгенерированный файл `CHATGPT_CLOUD_MANAGER.md`. Вставьте короткую активационную инструкцию из следующего раздела в Project Instructions. После этого начинайте обычным запросом на своём языке; копировать большой prompt вручную не нужно.
+Cloud Manager можно использовать двумя способами; ни один не обязателен для всех случаев.
+
+### Option A — chat attachment
+
+Прикрепите `CHATGPT_CLOUD_MANAGER.md` непосредственно к отдельному ChatGPT conversation. Это подходит для one-off use, тестирования или временной работы. Project Instructions не требуются; попросите чат использовать прикреплённый файл как Manager contract.
+
+### Option B — ChatGPT Project source
+
+Добавьте `CHATGPT_CLOUD_MANAGER.md` как ChatGPT Project source и один раз вставьте короткую активационную инструкцию из следующего раздела в Project Instructions. Это рекомендуемый путь для ongoing project work и нескольких cloud chats, использующих один Manager contract. Копировать большой prompt в Project Instructions не нужно.
 
 Codex-first остаётся полноценным вариантом: если работа уже начинается в workspace, установленный Plugin может маршрутизировать её через обычные Manager, Master и Task Skills без Cloud Manager.
 
@@ -35,11 +43,17 @@ Cloud-first uses ChatGPT for discovery, project-level decisions, Participation, 
 
 Use Cloud ChatGPT only for facts supported by the conversation or uploaded durable material. Treat filesystem, Git, runtime, server, database, and other mutable workspace claims as unresolved until a capable environment inspects them.
 
-Capability available != capability must control the workflow. Having access to Codex does not require a Codex transition when conversation-level work is sufficient, and having the Plugin installed does not require extra lifecycle ceremony.
+When required evidence or action concerns the user's real local mutable workspace—such as a local path, Git branch/status or dirty state, repository files, build/test state, or filesystem changes—and Cloud cannot inspect it, route directly `Cloud Manager → Codex`. Another execution environment may replace Codex only when it is already known to inspect or mutate that exact required workspace.
+
+Do not suggest ChatGPT Work as an exploratory intermediate hop merely because Work is available. Avoid `Cloud → unrelated execution environment → UNKNOWN → another handoff` when direct Cloud → Codex routing is appropriate.
+
+Apply the Shared Core smallest-sufficient-workflow rule. Having access to Codex does not require a Codex transition when conversation-level work is sufficient, and having the Plugin installed does not require extra lifecycle ceremony.
 
 ## Codex transition
 
-Move work to Codex only when the accepted next step requires workspace evidence or action. Apply the canonical Manager handoff presentation contract to both native and fallback routes. After the prompt, explain in the user's current language what Codex will do, why it is needed, and what result should return.
+Move work to Codex only when the accepted next step requires workspace evidence or action. Apply the canonical Manager handoff presentation contract to both native and fallback routes: prompt, recommendation, reason, and remaining commentary. Keep the recommendation and reason outside the durable prompt, and keep all user-facing material in the user's current language.
+
+For an ordinary copy-ready handoff, render the complete prompt as the first visible content in a plain fenced `text` block, with no ordinary lead-in or label. Only a material decision, safety issue, authority boundary, or other necessary warning that must be resolved before use may precede it. Do not use a writing/editor block, editable document, generated document artifact, or durable file for this copy/paste prompt. Actual specifications, plans, and reports may still use durable document forms.
 
 Use the native route when the destination supports the installed Project Bootstrap Plugin and Skills. Use the fallback route for an ordinary Codex session. Keep both routes bounded to the accepted next step and existing authority.
 
@@ -81,6 +95,6 @@ When needed, keep the snapshot compact: accepted decisions, open decisions, evid
 
 ## Updating the artifact
 
-При обновлении Project Bootstrap удалите старый `CHATGPT_CLOUD_MANAGER.md` из ChatGPT Project и загрузите новый файл из опубликованной версии. Большой prompt повторно копировать не нужно; короткая Project Instructions остаётся прежней, пока её схема явно не изменена.
+Для chat attachment прикрепите новый `CHATGPT_CLOUD_MANAGER.md` в новый или продолжаемый conversation. Для ChatGPT Project source удалите старый artifact и загрузите новый файл из опубликованной версии. Большой prompt повторно копировать не нужно; короткая Project Instructions остаётся прежней, пока её схема явно не изменена.
 
 Проверьте номер версии и provenance в новом artifact. Не объединяйте вручную разные версии canonical source и generated file.

@@ -1,6 +1,8 @@
 # Task Handoff
 
-Use only when the Task result is ready for Master Review.
+Use only when continuity or durability needs a durable completed cross-role result for Master Review. For short work, return the result in the normal response instead of creating this artifact.
+
+Do not label a normal Task response as a Handoff. This template is not a required completion wrapper and does not define a new result artifact type.
 
 ```text
 HANDOFF
@@ -27,4 +29,4 @@ Master request:
 <review or decision needed>
 ```
 
-Omit empty optional sections. Handoff does not itself promote knowledge, commit, push, merge, or release.
+Omit empty, irrelevant, or inapplicable sections. Report applicable verification and unresolved items honestly as PASS, FAIL, NOT TESTED, OPEN, or BLOCKED. Handoff does not itself promote knowledge, commit, push, merge, or release.

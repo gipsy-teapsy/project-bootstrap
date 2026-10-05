@@ -13,12 +13,16 @@ Durable state is not one magic file. Relevant evidence may include workspace fil
 
 Absence of Task State does not prove absence of active work.
 
-## Checkpoint and handoff
+## Normal result and durable continuity
 
-A Checkpoint means the logical task continues while the current Task Session may end. A Handoff means the Task result is ready for Master Review.
+NORMAL TASK RESULT ≠ DURABLE HANDOFF.
 
-`Task Start → Work → Verify → Convergence → Handoff → Master Review`
+A normal Task result is evidence for Master Review. For short bounded work, one compact response can report the result, verification, not-tested items, deviations, current relevant state, and blockers or decisions. Completing a Task does not require a durable Handoff artifact.
 
-Keep Task State or an ExecPlan only when the task is long, interruption-prone, portable across environments, or costly to rediscover. Update at meaningful transitions, not after every message.
+Task State is continuing durable work state. A Checkpoint durably preserves unfinished work when the logical task continues but the current Task Session may end. A Handoff is a durable completed cross-role result used only when a real durability or continuity boundary requires it, such as session or environment transfer, interruption-prone or long-running work, expensive-to-reconstruct context, or another genuine durability need.
 
-Before Handoff, refresh shared mutable state, identify drift, separate fresh from historical verification, and report any convergence gap.
+`Task Start → Work → Verify → Convergence → Master Review`
+
+Keep Task State, a Checkpoint, a Handoff, or an ExecPlan only when the task is long, interruption-prone, portable across environments, costly to rediscover, or otherwise needs durable cross-role continuity. Update durable state at meaningful transitions, not after every message.
+
+Before a durable Handoff, refresh shared mutable state, identify drift, separate fresh from historical verification, and report any convergence gap.
