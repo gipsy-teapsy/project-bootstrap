@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.8 — 2026-10-06
+
+- Aligned the portable manifest with Agent Plugins schema 1.0.0, keeping OpenAI presentation metadata under `extensions.com.openai.interface`.
+- Made public-checkout package validation reproducible without development tooling; added the offline official schema fixture and public test requirements.
+- Fixed GitHub PAT prefix detection for `ghp_` and `github_pat_`, with synthetic positive and negative regressions.
+- Preserved concrete accepted work, exclusions and authority across native ChatGPT → Codex handoffs; kept ordinary project bootstrap valid when no next work is accepted.
+- Expanded and organized the Russian Quick Start and User Guide, including a directly copyable, source-synchronized Project Instructions block.
+- Removed development-only documentation dependencies and used public repository URLs where runtime documents cannot rely on repository-relative paths.
+
 ## 0.1.7 — 2026-09-25
 
 - Added Coordination Compression rules: one complete evidence review, consolidated visible gaps, no redundant retelling, and correctness-preserving follow-up cycles.

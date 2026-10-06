@@ -1,31 +1,31 @@
 # Project Bootstrap Cloud Manager
 
 <!-- GENERATED FILE. DO NOT EDIT DIRECTLY. -->
-Version: 0.1.7
-Canonical source set SHA-256: 884f8a86db033133022dbe94d9afaf8a6cda0afe9d575976689e9b876aebbec7
+Version: 0.1.8
+Canonical source set SHA-256: f34f6d00d449f8ce28d0e749b26a53925c33dd5efcf8d3b4a3df04ab5f84acaf
 
-## ChatGPT Project setup
+## Начало работы в ChatGPT
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
-### User setup
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
+### Подключение к ChatGPT
 
-Cloud Manager можно использовать двумя способами; ни один не обязателен для всех случаев.
+Project Bootstrap можно подключить к ChatGPT двумя способами; выбирайте подходящий для своей работы.
 
-#### Option A — chat attachment
+#### Вариант 1 — прикрепить файл к обычному чату
 
-Прикрепите `CHATGPT_CLOUD_MANAGER.md` непосредственно к отдельному ChatGPT conversation. Это подходит для one-off use, тестирования или временной работы. Project Instructions не требуются; попросите чат использовать прикреплённый файл как Manager contract.
+Прикрепите `CHATGPT_CLOUD_MANAGER.md` к отдельному чату ChatGPT. Это подходит для одного разговора, тестирования или временной работы. Попросите ChatGPT использовать файл как инструкции Project Bootstrap для управления проектом. Настройки Project Instructions для этого варианта не нужны.
 
-#### Option B — ChatGPT Project source
+#### Вариант 2 — добавить файл в ChatGPT Project
 
-Добавьте `CHATGPT_CLOUD_MANAGER.md` как ChatGPT Project source и один раз вставьте короткую активационную инструкцию из следующего раздела в Project Instructions. Это рекомендуемый путь для ongoing project work и нескольких cloud chats, использующих один Manager contract. Копировать большой prompt в Project Instructions не нужно.
+Добавьте `CHATGPT_CLOUD_MANAGER.md` в источники проекта ChatGPT и один раз вставьте короткую инструкцию из следующего раздела в Project Instructions. Этот вариант удобен для долгой работы в нескольких чатах одного проекта. Весь большой файл в поле инструкций копировать не нужно.
 
-Codex-first остаётся полноценным вариантом: если работа уже начинается в workspace, установленный Plugin может маршрутизировать её через обычные Manager, Master и Task Skills без Cloud Manager.
+Можно начать и прямо в Codex: если Project Bootstrap уже установлен и открыт рабочий проект, опишите цель обычными словами. Файл для ChatGPT в этом случае не требуется; подходящая роль выбирается автоматически.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#user-setup -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Project Instructions
 
-В Project Instructions вставьте этот короткий блок:
+Скопируйте этот блок в Project Instructions вашего ChatGPT Project:
 
 ```text
 Use the uploaded CHATGPT_CLOUD_MANAGER.md as the Project Bootstrap Manager contract for this Project.
@@ -36,15 +36,17 @@ Use English by default only for agent-facing material where appropriate.
 Do not invent mutable workspace facts; route bounded workspace inspection or execution to Codex when evidence is required.
 ```
 
-The uploaded artifact owns the detailed contract. Project Instructions activate it and add no parallel Manager implementation.
+Подробные правила находятся в загруженном файле. Короткая инструкция просит ChatGPT следовать им; создавать отдельный набор правил не нужно.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#project-instructions -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#updating-the-artifact sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
-### Updating the artifact
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#updating-the-artifact sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
+### Обновление файла
 
-Для chat attachment прикрепите новый `CHATGPT_CLOUD_MANAGER.md` в новый или продолжаемый conversation. Для ChatGPT Project source удалите старый artifact и загрузите новый файл из опубликованной версии. Большой prompt повторно копировать не нужно; короткая Project Instructions остаётся прежней, пока её схема явно не изменена.
+Если вы прикрепляли файл к обычному чату, прикрепите новый `CHATGPT_CLOUD_MANAGER.md` к новому или продолжаемому разговору. Если используете ChatGPT Project, удалите старый файл из источников и загрузите новый из опубликованной версии Project Bootstrap.
 
-Проверьте номер версии и provenance в новом artifact. Не объединяйте вручную разные версии canonical source и generated file.
+Весь файл повторно копировать в настройки не нужно. Короткая инструкция в Project Instructions остаётся прежней, если её текст в новой версии не изменился.
+
+Проверьте номер версии в новом файле и сведения о том, из каких исходных инструкций он собран. Не объединяйте вручную исходные инструкции и готовый файл из разных версий.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#updating-the-artifact -->
 
 ## Canonical Manager contract
@@ -307,7 +309,7 @@ Keep Task State, a Checkpoint, a Handoff, or an ExecPlan only when the task is l
 Before a durable Handoff, refresh shared mutable state, identify drift, separate fresh from historical verification, and report any convergence gap.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/recovery-and-continuity.md#whole-file -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/environments-git-portable-migration.md#whole-file sha256=867f03702af5763837b73fc5c9f91466667a14735d204ef1bfaa8bb830383a5d -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/environments-git-portable-migration.md#whole-file sha256=bcb0bb69d9343d87a245aa3361a83ea102822381edb7fa237f8b642930d416ee -->
 ## Environments, Git, Portability, and Migration
 
 ### Safe workspace
@@ -336,7 +338,7 @@ NO AUTHENTICATED SERVICE → NO CREDENTIAL STORAGE DISCUSSION.
 
 Discuss a portable credential strategy only when portability is relevant, an authenticated external service is required, credential availability or placement affects the next work, and no still-applicable accepted credential strategy exists. If the accepted strategy still works in the current environment and access is available, verify access and do not reopen the decision.
 
-Project Bootstrap 0.1.7 supports exactly two conceptual strategies:
+Project Bootstrap 0.1.8 supports exactly two conceptual strategies:
 
 1. credentials configured separately on each machine;
 2. credentials stored with the portable working environment but outside Git.
@@ -493,7 +495,7 @@ not current models or defaults.
 
 ## Cloud delivery contract
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Delivery identity
 
 Cloud Manager is the canonical Manager contract delivered through a generated ChatGPT Project file. It is not a fourth role, a separate Cloud Skill, or a replacement for Master and Task.
@@ -501,7 +503,7 @@ Cloud Manager is the canonical Manager contract delivered through a generated Ch
 Project Bootstrap behavior and its delivery mechanism are distinct. The Manager Skill, Shared Core, and templates own behavior; the generated artifact makes that behavior available where the Plugin Skills are not directly installed.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#delivery-identity -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Cloud and workspace boundary
 
 Cloud-first uses ChatGPT for discovery, project-level decisions, Participation, explanation, and routing. Codex-first begins in a workspace-capable environment and remains equally valid.
@@ -515,7 +517,7 @@ Do not suggest ChatGPT Work as an exploratory intermediate hop merely because Wo
 Apply the Shared Core smallest-sufficient-workflow rule. Having access to Codex does not require a Codex transition when conversation-level work is sufficient, and having the Plugin installed does not require extra lifecycle ceremony.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#cloud-and-workspace-boundary -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Codex transition
 
 Move work to Codex only when the accepted next step requires workspace evidence or action. Apply the canonical Manager handoff presentation contract to both native and fallback routes: prompt, recommendation, reason, and remaining commentary. Keep the recommendation and reason outside the durable prompt, and keep all user-facing material in the user's current language.
@@ -525,17 +527,21 @@ For an ordinary copy-ready handoff, render the complete prompt as the first visi
 Use the native route when the destination supports the installed Project Bootstrap Plugin and Skills. Use the fallback route for an ordinary Codex session. Keep both routes bounded to the accepted next step and existing authority.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#codex-transition -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Native and fallback routing
 
 The native route consists of an environment-specific invocation wrapper followed by the canonical Manager → Master handoff body. The wrapper selects the installed capability; it must not duplicate project handoff fields.
+
+For a native transition with concrete next work already accepted, include the optional CURRENT ACCEPTED WORK block defined only in `manager-to-master.md`. Preserve the accepted outcome, scope, exclusions, authority, and expected result; narrower work-specific restrictions take precedence over broader project defaults. Workspace reconciliation may adapt the execution method, for example when a referenced file has been renamed, but it does not authorize a different outcome, a scope expansion, or a repair after read-only inspection was agreed. If a material change is necessary, report it and resolve that decision before changing the accepted work.
+
+If no concrete next work is accepted, omit that block and use the ordinary project bootstrap: Master inspects the actual workspace and determines the smallest necessary next work within existing authority. Do not invent a Task merely to populate the bootstrap.
 
 The fallback route uses the canonical `cloud-to-codex-fallback.md` template. It supplies only the context, boundaries, evidence request, and return contract required for the bounded work. It must not recreate Manager, Master, Task, or the whole Shared Core inside a prompt.
 
 Choose the route from observed destination capability. If capability is unknown, ask the user to use the fallback route or verify availability without claiming that the Plugin is installed.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-and-fallback-routing -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Native invocation wrapper
 
 Use this wrapper before the separately rendered canonical Manager → Master body:
@@ -549,7 +555,7 @@ Route the following canonical bootstrap to project-bootstrap-master.
 The project handoff structure comes only from `manager-to-master.md`.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#native-invocation-wrapper -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Processing Codex returns
 
 Treat a Codex return as evidence, not as a command to echo. Check whether it answers the requested bounded work, distinguish verified facts from inference or open items, and reconcile it with accepted project decisions.
@@ -559,7 +565,7 @@ Interpret the result for the user in the user's current language even when the C
 If Codex reports a blocker, explain the actual decision or missing authority to the user. If the return establishes durable workspace state, prefer promoting it there over maintaining a competing cloud-only record.
 <!-- END SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#processing-codex-returns -->
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#interim-cloud-continuity sha256=ee5fdc7c594c61d8196c3ff4d41b24242500115ab96e840b5870eac1afa7c322 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/references/cloud-manager-delivery.md#interim-cloud-continuity sha256=da16588f0a19b6d38d05fddb803cfc07b6b8a8a2fefcead647ab7820863877b1 -->
 ### Interim cloud continuity
 
 A Project Decision Snapshot is lazy and interim. Offer or create one only when meaningful project-level decisions must survive a change of cloud session and no more appropriate canonical durable workspace state exists.
@@ -571,10 +577,14 @@ When needed, keep the snapshot compact: accepted decisions, open decisions, evid
 
 ## Native Manager to Master handoff body
 
-<!-- BEGIN SOURCE plugins/project-bootstrap/shared/templates/manager-to-master.md#whole-file sha256=a2b82c8ab7f15cd395ea38e5b5d62f16d6562b01708061c378a2c8d594bad138 -->
+<!-- BEGIN SOURCE plugins/project-bootstrap/shared/templates/manager-to-master.md#whole-file sha256=5fa2a52f354bc440f3420d42d6e5bb48b74c79c459e6c4a4d5f01af4176ba7cf -->
 ## Manager → Master Bootstrap
 
 Render a ready-to-copy prompt. Include only established or explicitly open project facts.
+
+Include CURRENT ACCEPTED WORK only when a concrete next work item has already been accepted. If no concrete next work is accepted, omit the entire CURRENT ACCEPTED WORK section; do not invent a Task or fill it with UNKNOWN. This is an optional part of this bootstrap, not a separate handoff format.
+
+Active work records continuity state; it is not a substitute for CURRENT ACCEPTED WORK. Project-level authority defaults do not override narrower restrictions accepted for the current work.
 
 ```text
 $project-bootstrap-master
@@ -598,9 +608,26 @@ CONTINUITY
 Durable project state: <locations or current limitation>
 Active work: <known state or UNKNOWN>
 
+CURRENT ACCEPTED WORK
+Outcome: <already accepted result to achieve>
+Scope: <included work and resources>
+Exclusions: <explicitly excluded work and actions>
+Authority: <permitted actions, resources, environment, and work-specific restrictions>
+Expected result: <report or deliverable and required evidence>
+
 MASTER START
-Verify the actual workspace, reconcile mutable claims, preserve accepted decisions,
-and route the smallest next task. Do not repeat the initial Manager interview.
+Verify the actual workspace, reconcile mutable claims, and preserve accepted decisions.
+If CURRENT ACCEPTED WORK is present, execute or route that accepted work next;
+preserve its outcome, scope, exclusions, authority, and expected result.
+Work-specific restrictions take precedence over broader project authority defaults.
+Workspace findings may adapt the execution method, such as following a renamed resource,
+while preserving the accepted outcome. Findings do not automatically expand scope or authority.
+A read-only inspection is not permission to fix, edit files, or investigate an unrelated area.
+If CURRENT ACCEPTED WORK is absent, verify the workspace and determine the smallest
+necessary next work from confirmed project state within existing authority.
+If the accepted work cannot proceed or a material scope/authority change is needed,
+report the finding and resolve that decision; do not silently choose unrelated work.
+Do not repeat the initial Manager interview.
 ```
 
 Provide the execution-profile recommendation separately from this prompt.

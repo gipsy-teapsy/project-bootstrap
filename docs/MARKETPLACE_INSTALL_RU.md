@@ -50,4 +50,4 @@ Marketplace policy в repository задаёт `AVAILABLE` и `ON_INSTALL`, но 
 
 ## Ограничения текущей версии
 
-Версия 0.1.7 не содержит MCP, Apps, OAuth или backend. Наличие Cloud Manager artifact не доказывает доступность Plugin Skills в конкретной Cloud/Codex среде. Cloud Manager прошёл начальное ручное smoke testing; новые сценарии Coordination Compression и расширенный behavioral suite остаются `NOT TESTED` до отдельного runtime testing. ChatGPT marketplace Sync, доступность Plugin в Codex и полный behavioral lifecycle не заявлены как пройденные.
+Версия 0.1.8 не содержит MCP, Apps, OAuth или backend. Наличие Cloud Manager artifact не доказывает доступность Plugin Skills в конкретной Cloud/Codex среде. Cloud Manager прошёл начальное ручное smoke testing; новые сценарии Coordination Compression и расширенный behavioral suite остаются `NOT TESTED` до отдельного runtime testing. ChatGPT marketplace Sync, доступность Plugin в Codex и полный behavioral lifecycle не заявлены как пройденные.

@@ -8,7 +8,7 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.7 is a plugin beta focused on Coordination Compression and runtime-driven UX corrections: complete evidence review, consolidated correction requests, one active orchestration owner, bounded use of external capabilities, normal Task results without mandatory durable Handoffs, progressive disclosure, direct Cloud-to-Codex local-workspace routing, incremental discovery, gated portable-credential decisions, and a plain-text prompt → recommendation → reason → commentary handoff order. It does not add a role, visible mode, subsystem, lifecycle state, or public file. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Final model-guidance A/B/C passed in user-reported fresh Cloud runtime; broader behavioral testing continues separately. Marketplace Sync is verified separately from Git publication.
+Version 0.1.8 is a plugin beta focused on Coordination Compression and runtime-driven UX corrections: complete evidence review, consolidated correction requests, one active orchestration owner, bounded use of external capabilities, normal Task results without mandatory durable Handoffs, progressive disclosure, direct Cloud-to-Codex local-workspace routing, incremental discovery, gated portable-credential decisions, and a plain-text prompt → recommendation → reason → commentary handoff order. It does not add a role, visible mode, subsystem, or lifecycle state. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Final 0.1.7 model-guidance A/B/C passed in user-reported fresh Cloud runtime; broader behavioral testing continues separately. Marketplace Sync is verified separately from Git publication.
 
 ## Documentation
 
@@ -47,17 +47,18 @@ See [docs/MARKETPLACE_INSTALL_RU.md](docs/MARKETPLACE_INSTALL_RU.md) for the exa
 
 The plugin uses a portable Agent Plugins 1.0 root manifest and retains the supported `.codex-plugin/plugin.json` compatibility fallback. The repo marketplace is at `.agents/plugins/marketplace.json`.
 
-`CHATGPT_CLOUD_MANAGER.md` is generated from the canonical Manager Skill, Shared Core, Cloud delivery reference, and handoff templates. `tools/build_cloud_manager.py` composes and validates those sources but owns no behavioral policy.
+`CHATGPT_CLOUD_MANAGER.md` contains the Manager instructions assembled from the canonical skills, shared references, and templates bundled with the plugin. The public repository ships the ready-to-use file.
 
 ## Validation
 
-Run:
+From the public repository root, install the test dependency and run the shipped package checks:
 
 ```powershell
-python tools/build_cloud_manager.py --repo . --check
-python -m unittest discover -s tests -p "test_*.py" -v
-python <plugin-creator>/scripts/validate_plugin.py plugins/project-bootstrap
+python -m pip install -r tests/requirements.txt
+python -m unittest discover -s tests -p "test_package.py" -v
 ```
+
+The public tests include full validation of the portable manifest against the bundled official Agent Plugins 1.0.0 schema. They run using the files shipped in this repository. These package checks are separate from work on your own project and are not required to use the installed plugin.
 
 Static validation cannot prove marketplace import or runtime behavior. See [docs/TESTING.md](docs/TESTING.md).
 

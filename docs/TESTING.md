@@ -2,28 +2,18 @@
 
 Testing is divided into static/package checks and real runtime behavior. A static PASS must never be reported as a behavioral PASS.
 
-## Package and static validation
+## Public checkout: package and static validation
 
-`tests/test_package.py` checks JSON parsing and required shape, strict semver, name/path consistency, all three Skill frontmatters, relative links, shared-resource reachability, forbidden MCP/app declarations, language-contract markers, placeholders, common secret/local-path patterns, unexpected binaries, installation documentation, and honest test-status wording.
-
-`tests/test_cloud_manager_builder.py` executes the generator against real fixture repositories. It checks deterministic output, declared source provenance, mechanical template derivation, stale-artifact detection, commit-only validation, manifest-version convergence, native wrapper/body separation, and the absence of Cloud behavioral policy in Python literals.
-
-Repository text is canonical LF under `.gitattributes`; PNG assets are binary. Contributors may keep their ordinary Git `core.autocrlf` setting: the generator regression tests cover both fresh Windows-like checkouts and existing CRLF checkouts that receive the repository policy during an update.
-
-Run:
+Run from the public Project Bootstrap repository root with Python and pip available. These checks validate the plugin package; they are separate from work on your own project and are not required for normal plugin use:
 
 ```powershell
-python tools/build_cloud_manager.py --repo . --check
-python -m unittest discover -s tests -p "test_*.py" -v
+python -m pip install -r tests/requirements.txt
+python -m unittest discover -s tests -p "test_package.py" -v
 ```
 
-The built-in OpenAI plugin validator checks the compatibility manifest and bundled skills:
+`tests/test_package.py` checks the complete portable manifest against the official [Agent Plugins 1.0.0 schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.json), using Draft 2020-12 validation. The unchanged schema is bundled at `tests/fixtures/plugin.schema-1.0.0.json`; its LF-normalized SHA-256 is pinned in the test, and its identifier must match the manifest's declared version. Validation runs offline after installing the test dependency. Reintroducing the forbidden top-level `interface` is covered by a separate rejection test. OpenAI presentation metadata remains consistent with the compatibility manifest.
 
-```powershell
-python <plugin-creator>/scripts/validate_plugin.py plugins/project-bootstrap
-```
-
-These checks are necessary but do not prove runtime behavior.
+The same suite checks semver, name/path consistency, three skill frontmatters, relative links, shared-resource reachability, forbidden MCP/app declarations, language-contract markers, placeholders, common secret/local-path patterns, unexpected binaries, installation documentation, and honest test-status wording. Separate synthetic detector tests cover GitHub PAT prefixes with underscores, reject the erroneous hyphen variants, and retain coverage of the other supported secret families. This scan is a packaging heuristic, not a complete security audit.
 
 ## Marketplace smoke
 

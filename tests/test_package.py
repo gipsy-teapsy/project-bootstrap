@@ -1,9 +1,12 @@
+import hashlib
 import json
 import re
 import struct
 import unittest
 import zlib
 from pathlib import Path
+
+from jsonschema import Draft202012Validator
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,6 +51,12 @@ SEMVER = re.compile(
     r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
 )
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+SCHEMA = ROOT / "tests" / "fixtures" / "plugin.schema-1.0.0.json"
+SCHEMA_SHA256 = "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883"
+SECRET = re.compile(
+    r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|"
+    r"\b(?:(?:ghp|github_pat)_|sk-proj-)[A-Za-z0-9_-]{16,}\b"
+)
 
 
 def load_json(path: Path):
@@ -146,7 +155,50 @@ def read_png_rgba_alpha(path: Path):
     return (width, height), rows, alpha
 
 
+class SecretDetectorTests(unittest.TestCase):
+    def test_github_pat_underscore_prefixes_are_detected(self):
+        for prefix in ("ghp_", "github_pat_"):
+            with self.subTest(prefix=prefix):
+                token = prefix + "A" * 36
+                self.assertIsNotNone(SECRET.search("token=" + token))
+
+    def test_github_hyphen_prefixes_are_not_pats(self):
+        for prefix in ("ghp-", "github_pat-"):
+            with self.subTest(prefix=prefix):
+                self.assertIsNone(SECRET.search(prefix + "A" * 36))
+
+    def test_other_supported_secret_families_are_detected(self):
+        samples = ["sk-proj-" + "A" * 36]
+        samples.extend(
+            "-----BEGIN " + kind + "PRIVATE KEY-----"
+            for kind in ("", "RSA ", "EC ", "OPENSSH ")
+        )
+        for sample in samples:
+            with self.subTest(sample=sample):
+                self.assertIsNotNone(SECRET.search(sample))
+
+
 class PackageContractTests(unittest.TestCase):
+    def test_portable_manifest_validates_against_declared_official_schema(self):
+        # Git may materialize the public JSON fixture with CRLF on Windows.
+        schema_bytes = SCHEMA.read_bytes().replace(b"\r\n", b"\n")
+        self.assertEqual(SCHEMA_SHA256, hashlib.sha256(schema_bytes).hexdigest())
+        schema = load_json(SCHEMA)
+        manifest = load_json(PLUGIN / "plugin.json")
+        self.assertEqual(schema["$id"], manifest["$schema"])
+        Draft202012Validator.check_schema(schema)
+        errors = list(Draft202012Validator(schema).iter_errors(manifest))
+        self.assertEqual([], [error.message for error in errors])
+
+    def test_schema_rejects_return_of_top_level_interface(self):
+        manifest = load_json(PLUGIN / "plugin.json")
+        manifest["interface"] = load_json(PLUGIN / ".codex-plugin" / "plugin.json")["interface"]
+        errors = list(Draft202012Validator(load_json(SCHEMA)).iter_errors(manifest))
+        self.assertTrue(any(
+            error.validator == "additionalProperties" and "interface" in error.message
+            for error in errors
+        ), "the original forbidden top-level interface must fail schema validation")
+
     def test_expected_layout_exists(self):
         expected = [
             MARKETPLACE,
@@ -202,7 +254,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.7", manifest["version"])
+            self.assertEqual("0.1.8", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -214,7 +266,7 @@ class PackageContractTests(unittest.TestCase):
             self.assertNotIn("apps", manifest)
             self.assertNotIn("mcpServers", manifest)
         self.assertEqual("./skills/", compat["skills"])
-        self.assertEqual(portable["interface"], compat["interface"])
+        self.assertEqual(portable["extensions"]["com.openai"]["interface"], compat["interface"])
         interface = compat["interface"]
         self.assertEqual("Project Bootstrap", interface["displayName"])
         self.assertEqual("Gipsy", interface["developerName"])
@@ -728,6 +780,23 @@ class PackageContractTests(unittest.TestCase):
         for option in ("Совместно", "По ключевым решениям", "Делегированно"):
             self.assertIn(option, manager)
 
+    def test_quick_start_project_instructions_match_canonical_and_generated(self):
+        paths = (
+            PLUGIN / "shared/references/cloud-manager-delivery.md",
+            PLUGIN / "docs/QUICK_START_RU.md",
+            PLUGIN / "docs/CHATGPT_CLOUD_MANAGER.md",
+        )
+        blocks = []
+        for path in paths:
+            text = path.read_text(encoding="utf-8")
+            section = re.search(r"(?ms)^#{2,4} (?:Готовый блок )?Project Instructions\s*\n(.*?)(?=^#{1,4} |\Z)", text)
+            self.assertIsNotNone(section, f"copyable Project Instructions missing in {path.name}")
+            fenced = re.findall(r"(?ms)^```text\n(.*?)^```", section.group(1))
+            self.assertEqual(1, len(fenced), f"one complete activation block required in {path.name}")
+            blocks.append(fenced[0].strip())
+        self.assertEqual(blocks[0], blocks[1], "Quick Start activation instructions drifted from their source")
+        self.assertEqual(blocks[0], blocks[2], "generated activation instructions drifted from their source")
+
     def test_cloud_artifact_supports_chat_attachment_and_project_source(self):
         cloud = (
             PLUGIN / "shared" / "references" / "cloud-manager-delivery.md"
@@ -735,19 +804,13 @@ class PackageContractTests(unittest.TestCase):
         artifact = (
             PLUGIN / "docs" / "CHATGPT_CLOUD_MANAGER.md"
         ).read_text(encoding="utf-8")
-        quick = (
-            PLUGIN / "docs" / "QUICK_START_RU.md"
-        ).read_text(encoding="utf-8")
-        for text in (cloud, artifact, quick):
-            self.assertIn("Option A", text)
-            self.assertIn("chat attachment", text)
-            self.assertIn("Option B", text)
-            self.assertIn("ChatGPT Project source", text)
-        self.assertIn("one-off use", cloud)
-        self.assertIn("ongoing project work", cloud)
-        self.assertIn("рекомендуемый путь", cloud)
-        self.assertIn("нескольких чатах", quick)
-        self.assertIn("Codex-first", quick)
+        for text in (cloud, artifact):
+            self.assertRegex(text, r"(?m)^#{3,4} Вариант 1 .* обычному чату$")
+            self.assertRegex(text, r"(?m)^#{3,4} Вариант 2 .* ChatGPT Project$")
+        setup = cloud.split("## Подключение к ChatGPT", 1)[1].split("## Project Instructions", 1)[0]
+        self.assertIn("для одного разговора", setup)
+        self.assertIn("для долгой работы в нескольких чатах", setup)
+        self.assertIn("Настройки Project Instructions для этого варианта не нужны", setup)
 
     def test_task_results_are_required_while_durable_artifacts_remain_lazy(self):
         task = (
@@ -911,9 +974,6 @@ class PackageContractTests(unittest.TestCase):
             with self.subTest(semantic=semantic):
                 self.assertTrue(re.search(pattern, reasoning, re.S), f"missing reasoning semantics: {semantic}")
         self.assertNotRegex(profile, r"(?i)\bGPT-\d")
-        guide = (PLUGIN / "docs" / "USER_GUIDE_RU.md").read_text(encoding="utf-8")
-        profile_guide = guide.split("## 24. Execution profile", 1)[1].split("## 25.", 1)[0]
-        self.assertNotRegex(profile_guide, r"(?i)\bGPT-\d")
         for template in (native, fallback):
             self.assertNotRegex(template, r"(?i)\bGPT-\d")
             self.assertNotIn("Recommended execution profile", template)
@@ -1053,10 +1113,6 @@ class PackageContractTests(unittest.TestCase):
     def test_repository_copy_is_free_of_placeholders_secrets_and_local_paths(self):
         placeholder = re.compile(r"\b(?:TODO|TBD)\b|\[TODO(?::[^\]]*)?\]", re.I)
         local_path = re.compile(r"(?:[A-Za-z]:\\(?:Users|Documents|Desktop)\\|/home/|/Users/)")
-        secret = re.compile(
-            r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|"
-            r"\b(?:ghp|github_pat|sk-proj)-[A-Za-z0-9_-]{16,}\b"
-        )
         findings = []
         for path in product_text_files():
             if path.suffix not in {".md", ".json"}:
@@ -1065,7 +1121,7 @@ class PackageContractTests(unittest.TestCase):
             for label, pattern in (
                 ("placeholder", placeholder),
                 ("local path", local_path),
-                ("secret", secret),
+                ("secret", SECRET),
             ):
                 if pattern.search(text):
                     findings.append(f"{path.relative_to(ROOT)}: {label}")

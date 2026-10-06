@@ -1,6 +1,6 @@
 # Project Bootstrap plugin
 
-Project Bootstrap v0.1.7 packages three user-facing skills:
+Project Bootstrap v0.1.8 packages three user-facing skills:
 
 - `project-bootstrap-manager`
 - `project-bootstrap-master`
@@ -14,7 +14,7 @@ In a Plugin-capable environment, keep all three components enabled. Describe the
 
 For one-off Cloud-first use, download [CHATGPT_CLOUD_MANAGER.md](docs/CHATGPT_CLOUD_MANAGER.md), attach it to one ChatGPT conversation, and ask the chat to use it as the Manager contract.
 
-For ongoing Cloud-first use in ChatGPT Plus:
+For ongoing use in a ChatGPT Project:
 
 1. Create a ChatGPT Project.
 2. Download [CHATGPT_CLOUD_MANAGER.md](docs/CHATGPT_CLOUD_MANAGER.md).
@@ -30,8 +30,10 @@ Do not copy the full artifact into Project Instructions. Chat attachment is inte
 
 Shared references and templates live under `shared/` and are loaded progressively by the role that needs them. Shared Core is not a user-facing skill. Cloud-specific behavior lives in a canonical reference; the generated artifact remains traceable to all of its Markdown inputs.
 
-The root `plugin.json` is the portable Agent Plugins 1.0 manifest. `.codex-plugin/plugin.json` is the supported compatibility fallback and declares the skills path and OpenAI presentation metadata.
+The root `plugin.json` is the portable Agent Plugins 1.0 manifest; OpenAI presentation metadata lives under `extensions.com.openai.interface`. `.codex-plugin/plugin.json` is the supported compatibility fallback and declares the skills path and OpenAI presentation metadata.
 
 This beta is skills-only. It deliberately contains no MCP or app declaration, so packaging does not make it Desktop only.
 
 Cloud Manager: initial manual smoke tested; final 0.1.7 model-guidance A/B/C passed in user-reported fresh Cloud runtime. Model-guidance is closed; broader behavioral testing continues separately during beta. Marketplace Sync is verified separately from Git publication.
+
+The public GitHub repository provides the plugin package and installation catalog. After installation, open your own working project in Codex; the guides above explain how to start.

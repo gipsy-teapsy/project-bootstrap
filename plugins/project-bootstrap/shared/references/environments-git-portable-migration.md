@@ -26,7 +26,7 @@ NO AUTHENTICATED SERVICE → NO CREDENTIAL STORAGE DISCUSSION.
 
 Discuss a portable credential strategy only when portability is relevant, an authenticated external service is required, credential availability or placement affects the next work, and no still-applicable accepted credential strategy exists. If the accepted strategy still works in the current environment and access is available, verify access and do not reopen the decision.
 
-Project Bootstrap 0.1.7 supports exactly two conceptual strategies:
+Project Bootstrap 0.1.8 supports exactly two conceptual strategies:
 
 1. credentials configured separately on each machine;
 2. credentials stored with the portable working environment but outside Git.

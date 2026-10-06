@@ -2,23 +2,23 @@
 
 This reference defines only the ChatGPT Project delivery layer for the canonical Manager contract. It does not create another Project Bootstrap role or replace the Manager Skill and Shared Core.
 
-## User setup
+## Подключение к ChatGPT
 
-Cloud Manager можно использовать двумя способами; ни один не обязателен для всех случаев.
+Project Bootstrap можно подключить к ChatGPT двумя способами; выбирайте подходящий для своей работы.
 
-### Option A — chat attachment
+### Вариант 1 — прикрепить файл к обычному чату
 
-Прикрепите `CHATGPT_CLOUD_MANAGER.md` непосредственно к отдельному ChatGPT conversation. Это подходит для one-off use, тестирования или временной работы. Project Instructions не требуются; попросите чат использовать прикреплённый файл как Manager contract.
+Прикрепите `CHATGPT_CLOUD_MANAGER.md` к отдельному чату ChatGPT. Это подходит для одного разговора, тестирования или временной работы. Попросите ChatGPT использовать файл как инструкции Project Bootstrap для управления проектом. Настройки Project Instructions для этого варианта не нужны.
 
-### Option B — ChatGPT Project source
+### Вариант 2 — добавить файл в ChatGPT Project
 
-Добавьте `CHATGPT_CLOUD_MANAGER.md` как ChatGPT Project source и один раз вставьте короткую активационную инструкцию из следующего раздела в Project Instructions. Это рекомендуемый путь для ongoing project work и нескольких cloud chats, использующих один Manager contract. Копировать большой prompt в Project Instructions не нужно.
+Добавьте `CHATGPT_CLOUD_MANAGER.md` в источники проекта ChatGPT и один раз вставьте короткую инструкцию из следующего раздела в Project Instructions. Этот вариант удобен для долгой работы в нескольких чатах одного проекта. Весь большой файл в поле инструкций копировать не нужно.
 
-Codex-first остаётся полноценным вариантом: если работа уже начинается в workspace, установленный Plugin может маршрутизировать её через обычные Manager, Master и Task Skills без Cloud Manager.
+Можно начать и прямо в Codex: если Project Bootstrap уже установлен и открыт рабочий проект, опишите цель обычными словами. Файл для ChatGPT в этом случае не требуется; подходящая роль выбирается автоматически.
 
 ## Project Instructions
 
-В Project Instructions вставьте этот короткий блок:
+Скопируйте этот блок в Project Instructions вашего ChatGPT Project:
 
 ```text
 Use the uploaded CHATGPT_CLOUD_MANAGER.md as the Project Bootstrap Manager contract for this Project.
@@ -29,7 +29,7 @@ Use English by default only for agent-facing material where appropriate.
 Do not invent mutable workspace facts; route bounded workspace inspection or execution to Codex when evidence is required.
 ```
 
-The uploaded artifact owns the detailed contract. Project Instructions activate it and add no parallel Manager implementation.
+Подробные правила находятся в загруженном файле. Короткая инструкция просит ChatGPT следовать им; создавать отдельный набор правил не нужно.
 
 ## Delivery identity
 
@@ -60,6 +60,10 @@ Use the native route when the destination supports the installed Project Bootstr
 ## Native and fallback routing
 
 The native route consists of an environment-specific invocation wrapper followed by the canonical Manager → Master handoff body. The wrapper selects the installed capability; it must not duplicate project handoff fields.
+
+For a native transition with concrete next work already accepted, include the optional CURRENT ACCEPTED WORK block defined only in `manager-to-master.md`. Preserve the accepted outcome, scope, exclusions, authority, and expected result; narrower work-specific restrictions take precedence over broader project defaults. Workspace reconciliation may adapt the execution method, for example when a referenced file has been renamed, but it does not authorize a different outcome, a scope expansion, or a repair after read-only inspection was agreed. If a material change is necessary, report it and resolve that decision before changing the accepted work.
+
+If no concrete next work is accepted, omit that block and use the ordinary project bootstrap: Master inspects the actual workspace and determines the smallest necessary next work within existing authority. Do not invent a Task merely to populate the bootstrap.
 
 The fallback route uses the canonical `cloud-to-codex-fallback.md` template. It supplies only the context, boundaries, evidence request, and return contract required for the bounded work. It must not recreate Manager, Master, Task, or the whole Shared Core inside a prompt.
 
@@ -93,8 +97,10 @@ Do not require a snapshot for short discovery, tentative information, decisions 
 
 When needed, keep the snapshot compact: accepted decisions, open decisions, evidence level, and the next routing boundary. Retire or supersede it after the information is promoted to canonical workspace state. A ChatGPT Project must not become a second mandatory state-management system.
 
-## Updating the artifact
+## Обновление файла
 
-Для chat attachment прикрепите новый `CHATGPT_CLOUD_MANAGER.md` в новый или продолжаемый conversation. Для ChatGPT Project source удалите старый artifact и загрузите новый файл из опубликованной версии. Большой prompt повторно копировать не нужно; короткая Project Instructions остаётся прежней, пока её схема явно не изменена.
+Если вы прикрепляли файл к обычному чату, прикрепите новый `CHATGPT_CLOUD_MANAGER.md` к новому или продолжаемому разговору. Если используете ChatGPT Project, удалите старый файл из источников и загрузите новый из опубликованной версии Project Bootstrap.
 
-Проверьте номер версии и provenance в новом artifact. Не объединяйте вручную разные версии canonical source и generated file.
+Весь файл повторно копировать в настройки не нужно. Короткая инструкция в Project Instructions остаётся прежней, если её текст в новой версии не изменился.
+
+Проверьте номер версии в новом файле и сведения о том, из каких исходных инструкций он собран. Не объединяйте вручную исходные инструкции и готовый файл из разных версий.

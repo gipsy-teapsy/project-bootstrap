@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "project-bootstrap",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Plan, coordinate, and execute durable project work across ChatGPT and Codex.",
   "author": {
     "name": "Gipsy"
@@ -9,19 +9,23 @@
   "homepage": "https://github.com/gipsy-teapsy/project-bootstrap",
   "repository": "https://github.com/gipsy-teapsy/project-bootstrap",
   "keywords": ["project-management", "coordination", "continuity", "codex"],
-  "interface": {
-    "displayName": "Project Bootstrap",
-    "shortDescription": "Durable coordination for project work",
-    "longDescription": "Route project setup, coordination, and bounded execution through Manager, Master, and Task roles.",
-    "developerName": "Gipsy",
-    "category": "Developer Tools",
-    "capabilities": ["Read", "Write"],
-    "defaultPrompt": [
-      "Хочу создать новый проект.",
-      "Продолжим работу над проектом.",
-      "Проверь, всё ли готово."
-    ],
-    "logo": "./assets/icon-master-1024.png",
-    "composerIcon": "./assets/icon-64.png"
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Project Bootstrap",
+        "shortDescription": "Durable coordination for project work",
+        "longDescription": "Route project setup, coordination, and bounded execution through Manager, Master, and Task roles.",
+        "developerName": "Gipsy",
+        "category": "Developer Tools",
+        "capabilities": ["Read", "Write"],
+        "defaultPrompt": [
+          "Хочу создать новый проект.",
+          "Продолжим работу над проектом.",
+          "Проверь, всё ли готово."
+        ],
+        "logo": "./assets/icon-master-1024.png",
+        "composerIcon": "./assets/icon-64.png"
+      }
+    }
   }
 }
