@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — Unreleased
+
+- Added the standalone `project-bootstrap-transfer` Skill alongside the three Manager, Master and Task roles. It extracts accessible shared-page, supported saved HTML, structured JSON export or previous normalized transcript records into HISTORY.json, then prepares full REFERENCE.md and HANDOFF.md for continuation.
+- Recorded source provenance, separate source and extraction completeness, available message order/IDs/raw metadata, additional accessible branches, and attachment/redaction limitations. Comparison with a user-identified control requires evidence of the same conversation lineage; repeat transfers preserve prior snapshots and inherited meaning with provenance.
+- Bounded extraction and windowed reading; preserved attachment metadata and upstream partial evidence, and required explicit failure for inaccessible, unsupported or insufficient structured input rather than a fabricated archive. A public export alone cannot establish completeness of a private original or recover unavailable attachments or redacted content.
+- Added optional Russian and English Cloud Context Transfer instructions for manual meaning and continuation documents, usable independently of Cloud Manager. This path does not promise structured HISTORY.json.
+- Clarified Master's check for persistent accepted project instructions, including reuse of applicable AGENTS.md without making that file mandatory.
+- Refined context recovery and continuity, comments as task-relevant intent, bounded subagent context and authority, accessible evidence, long-operation observability, and optional destination-aware Cloud Manager delivery. Preserved the three-role model, existing authority boundaries, smallest sufficient workflow and shared coordination contracts.
+- Updated user documentation, generated Cloud Manager provenance, exact public inventory and package/Transfer regressions. Accepted installed-Candidate Transfer runtime is READY WITH NOTES for the reported synthetic, repeat-transfer and incomplete-source cases; it is not a blanket model-runtime or original-conversation completeness guarantee. Verification of the final committed release artifact remains pending.
+
 ## 0.1.8 — 2026-10-06
 
 - Aligned the portable manifest with Agent Plugins schema 1.0.0, keeping OpenAI presentation metadata under `extensions.com.openai.interface`.

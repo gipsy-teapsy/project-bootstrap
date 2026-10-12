@@ -24,6 +24,8 @@ CORRECTNESS > COORDINATION COMPRESSION.
 
 These are optimization rules, not rigid prohibitions. Master should review the complete available result, consolidate currently visible gaps, and avoid asking a Task to retell evidence that is already available. A new cycle is justified by genuinely new evidence, a blocker, a new verification need, or a correction that correctness still requires. If Master missed an already-visible gap, correct the review miss rather than preserving an incorrect result for the sake of fewer cycles.
 
+Keep the result, material verification coverage, and unresolved limitations in the report. Use evidence pointers for detail only when the recipient can access them; do not replace acceptance-critical information with an inaccessible link.
+
 ## Lifecycle and routing
 
 `Manager → Master → Task → Verify → Converge → Master Review`
@@ -109,8 +111,14 @@ Final user-facing reports may use restrained Markdown emphasis for useful anchor
 
 Master owns project coordination. Task may obtain bounded, normally read-only facts or evidence from another task when necessary. Consultation does not transfer ownership or promote a claim into project truth.
 
+When delegating to a subagent, supply the minimum sufficient task context, applicable scope and authority constraints, and required sources. Do not assume full parent-context inheritance or instruction loading from a shared workspace. Arrange reading of accessible canonical guidance applicable to the child's scope, or include essential rules that are otherwise unavailable; do not copy the full history by default.
+
 ONE LOGICAL TASK → ONE ACTIVE WRITER AT A TIME.
 
 ## Verification and convergence
+
+When implementing code, add a comment when it explains non-obvious intent, a constraint, or the reason for a decision. Do not restate obvious code behavior.
+
+For long-running operations, use available signals of activity, progress, errors, and completion. When a material delay or deviation warrants it, check status if the environment supports it and existing authority permits it, and report meaningful observed facts; do not invent percentages or completion estimates.
 
 Verification asks whether the implementation works. Convergence asks whether the accepted goal and all applicable requirements are covered. Tests can be green while convergence has a gap. Handoff is ready only after both are adequate or a limitation is explicitly preserved for Master/user acceptance.

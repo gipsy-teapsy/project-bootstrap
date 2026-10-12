@@ -12,11 +12,12 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "project-bootstrap"
 MARKETPLACE = ROOT / ".agents" / "plugins" / "marketplace.json"
-SKILLS = (
+ROLE_SKILLS = (
     "project-bootstrap-manager",
     "project-bootstrap-master",
     "project-bootstrap-task",
 )
+SKILLS = ROLE_SKILLS + ("project-bootstrap-transfer",)
 SHARED_REFERENCES = (
     "cloud-manager-delivery.md",
     "control-model.md",
@@ -254,7 +255,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.1.8", manifest["version"])
+            self.assertEqual("0.2.0", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -1177,7 +1178,8 @@ class PackageContractTests(unittest.TestCase):
             if not base.exists():
                 continue
             for path in base.rglob("*"):
-                if path.is_file() and path.suffix.lower() not in allowed_suffixes:
+                if (path.is_file() and path.suffix.lower() not in allowed_suffixes
+                        and path != PLUGIN / "skills/project-bootstrap-transfer/scripts/extract_history.py"):
                     bad.append(str(path.relative_to(ROOT)))
                 if path.name in {"__pycache__", ".pytest_cache", ".DS_Store"}:
                     bad.append(str(path.relative_to(ROOT)))
@@ -1198,6 +1200,207 @@ class PackageContractTests(unittest.TestCase):
         self.assertIn("Sync now", install)
         self.assertRegex(testing, r"(?i)behavioral lifecycle.*NOT TESTED")
         self.assertIsNone(re.search(r"(?i)behavioral(?: lifecycle)?\s*:\s*PASS", combined))
+
+
+
+class ContextTransferContractTests(unittest.TestCase):
+    """Static delivery guards, not ChatGPT conversation execution."""
+
+    def editions(self):
+        return {name: (PLUGIN / 'docs' / name).read_text(encoding='utf-8')
+                for name in ('CHATGPT_CONTEXT_TRANSFER_EN.md', 'CHATGPT_CONTEXT_TRANSFER_RU.md')}
+
+    def test_standalone_user_documents_and_three_roles(self):
+        for name, text in self.editions().items():
+            with self.subTest(edition=name):
+                self.assertFalse(text.startswith('---'))
+                for output in ('REFERENCE.md', 'HANDOFF.md'):
+                    self.assertIn(output, text)
+        self.assertEqual(len(ROLE_SKILLS), 3)
+        self.assertEqual(set(SKILLS), {p.name for p in (PLUGIN / 'skills').iterdir()})
+
+    def test_accepted_work_and_task_specific_authority_survive_transfer(self):
+        for name, text in self.editions().items():
+            with self.subTest(edition=name):
+                for field in ('Outcome', 'Scope', 'Exclusions', 'Authority', 'Expected result'):
+                    self.assertIn(field, text)
+        english = self.editions()['CHATGPT_CONTEXT_TRANSFER_EN.md']
+        self.assertRegex(english, r'(?is)If no concrete next task.*?do not invent one')
+        self.assertRegex(english, r'(?is)investigation only.*?not.*?permission to implement')
+
+    def test_repeat_transfer_is_complete_without_compulsory_history(self):
+        english = self.editions()['CHATGPT_CONTEXT_TRANSFER_EN.md']
+        for pattern in (r'new, complete REFERENCE and HANDOFF pair',
+                        r'not.*?merely a delta', r'not automatically overwrite or delete',
+                        r'absence of an old REFERENCE or HISTORY is not a transfer failure'):
+            self.assertRegex(english, '(?is)' + pattern)
+        russian = self.editions()['CHATGPT_CONTEXT_TRANSFER_RU.md']
+        self.assertIn('HISTORY', russian)
+        self.assertIn('\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0438\u0435 \u0441\u0442\u0430\u0440\u043e\u0433\u043e REFERENCE \u0438\u043b\u0438 HISTORY \u043d\u0435 \u0441\u0447\u0438\u0442\u0430\u0435\u0442\u0441\u044f \u043e\u0448\u0438\u0431\u043a\u043e\u0439', russian)
+
+    def test_document_language_does_not_change_user_language(self):
+        english = self.editions()['CHATGPT_CONTEXT_TRANSFER_EN.md']
+        for pattern in (r'REFERENCE.md` must be written in English',
+                        r'HANDOFF.md` must be written in English',
+                        r"First Recommended Response.*?user's established language",
+                        r"user's own natural-language messages and explicit preferences",
+                        r'Record the communication language in \*\*both\*\*',
+                        r'first natural-language message'):
+            self.assertRegex(english, '(?is)' + pattern)
+        russian = self.editions()['CHATGPT_CONTEXT_TRANSFER_RU.md']
+        self.assertRegex(russian, r'REFERENCE\.md \u0438 HANDOFF\.md.*?\u043d\u0430 \u0440\u0443\u0441\u0441\u043a\u043e\u043c \u044f\u0437\u044b\u043a\u0435')
+
+    def test_rationale_negative_results_and_uncertainty_are_retained(self):
+        english = self.editions()['CHATGPT_CONTEXT_TRANSFER_EN.md']
+        for topic in ('Preserve why decisions were made', 'Preserve meaningful chronology',
+                      'Preserve negative findings', 'Preserve uncertainty', 'Preserve authority boundaries'):
+            self.assertIn(topic, english)
+        for pattern in (r'Do not invent inaccessible messages',
+                        r'old test result into current verification',
+                        r'assistant suggestion into an accepted user decision'):
+            self.assertRegex(english, '(?is)' + pattern)
+
+    def test_manual_transfer_is_not_a_cloud_manager_source(self):
+        english = self.editions()['CHATGPT_CONTEXT_TRANSFER_EN.md']
+        self.assertIn('invoked manually by the user', english)
+        self.assertIn('without requiring Project Bootstrap to be installed or active', english)
+        self.assertIn('Do not monitor context-window consumption', english)
+        artifact = (PLUGIN / 'docs' / 'CHATGPT_CLOUD_MANAGER.md').read_text(encoding='utf-8')
+        for name in self.editions():
+            self.assertNotIn(name, artifact)
+        self.assertNotIn('# Part III \u2014 REFERENCE.md', artifact)
+
+    def test_user_entry_points_link_to_both_editions(self):
+        for entry in (PLUGIN / 'README.md', PLUGIN / 'docs' / 'QUICK_START_RU.md',
+                      PLUGIN / 'docs' / 'USER_GUIDE_RU.md'):
+            destinations = {(entry.parent / target.split('#', 1)[0]).resolve()
+                            for target in LINK.findall(entry.read_text(encoding='utf-8'))
+                            if not re.match(r'^[a-z]+://|^#', target)}
+            for name in self.editions():
+                with self.subTest(entry=entry.name, edition=name):
+                    self.assertIn((PLUGIN / 'docs' / name).resolve(), destinations)
+
+
+class PersistentInstructionsContractTests(unittest.TestCase):
+    """Check contract coverage; do not simulate the Codex discovery implementation."""
+
+    def test_bootstrap_instructions_cover_focused_regression_cases(self):
+        master = (PLUGIN / 'skills' / 'project-bootstrap-master' / 'SKILL.md').read_text(encoding='utf-8')
+        match = re.search(r'(?s)## Persistent project instructions\n(.*?)(?=\n## |\Z)', master)
+        self.assertIsNotNone(match, 'Master lacks the persistent-instructions bootstrap contract')
+        policy = match.group(1)
+        cases = {
+            'confirmed workspace, no invented local structure': (
+                r'initial setup or connection.*?confirmed.*?workspace',
+                r'Manager.*?accepted.*?not.*?guess.*?unavailable',
+                r'unconfirmed workspace.*?no.*?arbitrary.*?disk'),
+            'empty project and ordinary small task': (
+                r'no accepted durable project-specific rules.*?omit',
+                r'ordinary small task.*?not.*?create', r'no mandatory.*?onboarding question'),
+            'accepted stable rules, real gap, appropriate mechanism': (
+                r'accepted durable.*?real gap.*?authority', r'create or update.*?scope',
+                r'existing sufficient.*?reuse', r'short entry point.*?canonical'),
+            'preserve existing file and unresolved conflicts': (
+                r'read existing.*?before.*?change', r'correct.*?preserve.*?unchanged',
+                r'conflict.*?not.*?overwrite', r'policy change.*?authority'),
+            'global, inherited, override, fallback and nested scope': (
+                r'global.*?AGENTS\.override\.md.*?AGENTS\.md',
+                r'project root.*?current working directory',
+                r'AGENTS\.override\.md.*?AGENTS\.md.*?configured fallback',
+                r'at most one.*?directory', r'nested.*?not.*?whole project',
+                r'configured.*?size limit'),
+            'policy document is not automatically loaded': (
+                r'knowledge storage.*?canonical policy.*?automatic.*?Task',
+                r'arbitrary document.*?not.*?automatically', r'Markdown link.*?not.*?load',
+                r'Task.*?read.*?necessary.*?excerpt'),
+            'read-only authority': (
+                r'READ-only.*?no file.*?changes', r'inspection-only.*?proposal',
+                r'not.*?change.*?native Codex configuration'),
+            'concise project rules, no Bootstrap copy or temporary state': (
+                r'project-specific.*?commands.*?constraints',
+                r'not.*?copy.*?Manager.*?Master.*?Task',
+                r'not.*?temporary tasks.*?test results.*?model catalog'),
+            'next-session availability is not proof of runtime compliance': (
+                r'next session.*?available.*?applicable',
+                r'file existence.*?instruction loading.*?model compliance',
+                r'static.*?not.*?end-to-end PASS'),
+        }
+        for case, patterns in cases.items():
+            for pattern in patterns:
+                with self.subTest(case=case, contract=pattern):
+                    self.assertRegex(policy, '(?is)' + pattern)
+
+    def test_task_prompt_explicitly_routes_required_policy_reading(self):
+        template = (PLUGIN / 'shared' / 'templates' / 'master-to-task.md').read_text(encoding='utf-8')
+        self.assertRegex(template, r'(?is)Markdown link.*?not.*?load')
+        self.assertRegex(template, r'(?is)Task.*?read.*?task-relevant.*?canonical policy')
+        self.assertIn('minimum necessary excerpt', template)
+
+
+class FocusedContractRefinementTests(unittest.TestCase):
+    """Static scope and delivery guards; these do not prove model compliance."""
+
+    def section(self, name, heading):
+        source = (PLUGIN / 'shared' / 'references' / name).read_text(encoding='utf-8')
+        match = re.search(r'(?ms)^## ' + re.escape(heading) + r'\n(.*?)(?=^## |\Z)', source)
+        self.assertIsNotNone(match)
+        return match.group(1)
+
+    def covers(self, section, *patterns):
+        for pattern in patterns:
+            with self.subTest(requirement=pattern):
+                self.assertRegex(section, '(?is)' + pattern)
+
+    def test_code_comments_explain_intent_in_shared_execution_contract(self):
+        policy = self.section('control-model.md', 'Verification and convergence')
+        self.covers(policy, r'implementing code.*?comment.*?non-obvious intent.*?constraint.*?reason',
+                    r'Do not restate obvious code behavior')
+        for role in ('master', 'task'):
+            skill = (PLUGIN / 'skills' / ('project-bootstrap-' + role) / 'SKILL.md').read_text(encoding='utf-8')
+            self.assertIn('control-model.md', skill)
+        self.assertIn('For small bounded work', (PLUGIN / 'shared' / 'references' / 'control-model.md').read_text(encoding='utf-8'))
+
+    def test_subagent_delivery_does_not_assume_inheritance_or_loading(self):
+        policy = self.section('control-model.md', 'Ownership and consultation')
+        self.covers(policy, r'delegating to a subagent.*?minimum sufficient.*?scope and authority.*?required sources',
+                    r'Do not assume.*?parent-context inheritance.*?instruction loading.*?shared workspace',
+                    r'reading.*?accessible canonical guidance.*?child.*?scope.*?include essential rules.*?unavailable',
+                    r'do not copy the full history by default')
+        self.assertIn('ONE LOGICAL TASK → ONE ACTIVE WRITER AT A TIME', policy)
+        self.assertIn('Consultation does not transfer ownership', policy)
+
+    def test_evidence_access_does_not_hide_acceptance_critical_results(self):
+        policy = self.section('control-model.md', 'Coordination compression')
+        self.covers(policy, r'result.*?material verification coverage.*?unresolved limitations.*?report',
+                    r'evidence pointers.*?only when.*?recipient can access',
+                    r'do not replace acceptance-critical information.*?inaccessible link')
+        self.assertIn('CORRECTNESS > COORDINATION COMPRESSION', policy)
+
+    def test_compaction_is_conditional_and_preserves_durable_state(self):
+        policy = self.section('recovery-and-continuity.md', 'Normal result and durable continuity')
+        self.covers(policy, r'available native context compaction.*?new session.*?materially useful',
+                    r'Neither substitutes for durable project or task state',
+                    r'preserve.*?next work needs.*?existing appropriate sources.*?reconcile current evidence.*?transition')
+        self.assertIn('Completing a Task does not require a durable Handoff artifact', policy)
+        self.assertIn('meaningful transitions, not after every message', policy)
+
+    def test_long_operation_status_uses_observed_facts_within_authority(self):
+        policy = self.section('control-model.md', 'Verification and convergence')
+        self.covers(policy, r'long-running operations.*?available signals.*?activity.*?progress.*?errors.*?completion',
+                    r'material delay or deviation.*?check status.*?environment supports.*?existing authority',
+                    r'report.*?meaningful observed facts.*?do not invent percentages or completion estimates')
+
+    def test_optional_codex_ui_advice_stays_outside_the_assignment(self):
+        policy = self.section('cloud-manager-delivery.md', 'Codex transition')
+        self.covers(policy, r'known.*?available native Codex.*?only when.*?materially helps.*?accepted next step',
+                    r'reusing planning already completed',
+                    r'optional UI-command advice.*?commentary after.*?prompt.*?model/reasoning recommendation.*?reason.*?outside.*?copied assignment',
+                    r'do not embed slash commands expecting automatic execution',
+                    r'prompt instructions.*?explicit installed-Skill invocation',
+                    r'Do not require unsupported client features.*?Participation.*?authority.*?verification.*?durable-state')
+        self.assertIn('prompt as the first visible content', policy)
+        self.assertIn("user's current language", policy)
+        self.assertIn('Keep both routes bounded to the accepted next step and existing authority', policy)
 
 
 if __name__ == "__main__":

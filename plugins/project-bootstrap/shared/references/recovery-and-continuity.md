@@ -25,4 +25,6 @@ Task State is continuing durable work state. A Checkpoint durably preserves unfi
 
 Keep Task State, a Checkpoint, a Handoff, or an ExecPlan only when the task is long, interruption-prone, portable across environments, costly to rediscover, or otherwise needs durable cross-role continuity. Update durable state at meaningful transitions, not after every message.
 
+Use available native context compaction or a new session when materially useful. Neither substitutes for durable project or task state: preserve what the next work needs in the existing appropriate sources and reconcile current evidence after the transition.
+
 Before a durable Handoff, refresh shared mutable state, identify drift, separate fresh from historical verification, and report any convergence gap.

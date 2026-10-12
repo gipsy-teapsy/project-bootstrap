@@ -24,6 +24,26 @@ If the user explicitly delegates the whole task workflow to another lifecycle sy
 
 Infer the operational role from a clear session purpose. Reuse a known suitable execution context where appropriate; do not invent another Task chat or physical worker merely because a Task role is needed. Defer execution topology until the work requires it.
 
+## Persistent project instructions
+
+At initial setup or connection of a confirmed Codex workspace, establish which persistent project instructions actually apply and whether accepted durable project-specific rules will remain available to later sessions. File creation is not the goal. Manager may pass accepted goals, decisions, restrictions, and known sources; it must not guess the structure of an unavailable workspace or promise an AGENTS.md file. With an unconfirmed workspace, perform no arbitrary search across the disk.
+
+Keep knowledge storage, canonical policy location, automatic Codex instruction loading, and explicit policy delivery to a Task distinct. An arbitrary document is not automatically loaded because it exists. A Markdown link does not load its target: establish that the target is accessible and tell the Task to read the task-relevant canonical policy before acting, or supply the minimum necessary policy excerpt when that source is inaccessible. Task uses the applicable policy rather than inventing project-wide rules.
+
+Inspect the effective instruction chain within confirmed scope. Account for global guidance in the active Codex home (AGENTS.override.md before AGENTS.md), then the path from project root to the current working directory. At each directory, discovery selects AGENTS.override.md, then AGENTS.md, then configured fallback filenames, with at most one non-empty file per directory. More specific applicable guidance takes precedence; a nested file does not govern the whole project. Check the actual root/cwd, configured discovery names and size limit, overrides, and availability of referenced sources. Use the current [official Codex discovery rules](https://learn.chatgpt.com/docs/agent-configuration/agents-md); do not infer applicability from a filename alone or change native Codex configuration as part of this check.
+
+Read existing instructions before considering any change. Select the smallest sufficient outcome:
+
+- Existing sufficient instructions: reuse them. If correct, preserve the existing file unchanged; do not restructure an existing project's documentation merely to connect Bootstrap.
+- No accepted durable project-specific rules or no real gap: omit a new instructions file. An ordinary small task does not require creating AGENTS.md. Absence can be the correct result.
+- Accepted durable rules with a real gap: within existing authority, create or update the smallest applicable entry point, including AGENTS.md when appropriate to the project scope. A short entry point can direct reading of accessible canonical documentation instead of copying it. An existing working alternative is sufficient; no specific filename is mandatory.
+- Conflicting instructions: reconcile their scope and accepted decisions; do not overwrite unresolved policy or replace it with a generic Bootstrap template. A substantive policy change follows existing authority and user-decision rules.
+- READ-only authority: make no file or configuration changes. For inspection-only work, return the finding and a minimal proposal, not an implementation.
+
+Keep the entry point concise: accepted project-specific conventions, stable commands, constraints, resource/safety rules, and directions to necessary canonical sources. Do not copy the full Manager, Master, or Task contracts. Do not store temporary tasks, old test results, current plans, logs, or a model catalog there. Do not introduce a mandatory subagent policy as part of bootstrap. There is no mandatory AGENTS.md onboarding question and no blanket migration of existing projects.
+
+Before the next session, establish that required rules and their sources will be available and applicable in its intended workspace. Distinguish file existence, correct path and scope, source accessibility, instruction loading, and model compliance. Static contract checks do not prove end-to-end PASS after a session restart; claim runtime loading or compliance only when actually observed in that runtime.
+
 ## Master Review
 
 Before requesting corrections, review the complete available result and directly inspect suitable durable evidence instead of asking the Task to repeat it. Collect all currently visible gaps into one consolidated correction request. Start another cycle when new evidence, a new blocker, or a new verification need justifies it.

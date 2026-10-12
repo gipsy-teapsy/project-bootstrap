@@ -8,7 +8,7 @@ It separates three roles:
 - **Master** — the workspace coordinator that reconciles durable state, routes work, reviews handoffs, and drives project-level convergence.
 - **Task** — the bounded worker that implements or researches a task, verifies it, and returns evidence.
 
-Version 0.1.8 is a plugin beta focused on Coordination Compression and runtime-driven UX corrections: complete evidence review, consolidated correction requests, one active orchestration owner, bounded use of external capabilities, normal Task results without mandatory durable Handoffs, progressive disclosure, direct Cloud-to-Codex local-workspace routing, incremental discovery, gated portable-credential decisions, and a plain-text prompt → recommendation → reason → commentary handoff order. It does not add a role, visible mode, subsystem, or lifecycle state. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Final 0.1.7 model-guidance A/B/C passed in user-reported fresh Cloud runtime; broader behavioral testing continues separately. Marketplace Sync is verified separately from Git publication.
+Version 0.2.0 is a plugin beta with three roles and a fourth, standalone `project-bootstrap-transfer` Skill. Transfer archives accessible ChatGPT source messages in HISTORY.json and prepares REFERENCE.md and HANDOFF.md with provenance, separate source/extraction completeness, and explicit limitations. Optional Russian and English Cloud Context Transfer instructions provide a manual meaning-and-continuation path. This version also clarifies persistent project instructions, context recovery, bounded delegation and Cloud Manager delivery while preserving the existing coordination and authority contracts. Cloud Manager is the canonical Manager delivered through a file, not a fourth role. The package contains no MCP server, app, OAuth flow, backend, or hooks. Targeted Transfer runtime evidence is READY WITH NOTES in the tested scope; it cannot prove completeness of private originals, recover unavailable attachments or redacted content, or establish all model scenarios. Final 0.1.7 model-guidance A/B/C remains historical accepted evidence; broader behavioral testing continues separately. Marketplace Sync is verified separately from Git publication.
 
 ## Documentation
 
@@ -17,6 +17,9 @@ Keep **Manager**, **Master**, and **Task** enabled in Plugin-capable environment
 - [Russian quick-start guide](plugins/project-bootstrap/docs/QUICK_START_RU.md)
 - [Detailed Russian user guide](plugins/project-bootstrap/docs/USER_GUIDE_RU.md)
 - [Generated ChatGPT Cloud Manager artifact](plugins/project-bootstrap/docs/CHATGPT_CLOUD_MANAGER.md)
+- [Transfer Skill](plugins/project-bootstrap/skills/project-bootstrap-transfer/SKILL.md)
+- [Russian Cloud Context Transfer instruction](plugins/project-bootstrap/docs/CHATGPT_CONTEXT_TRANSFER_RU.md)
+- [English Cloud Context Transfer instruction](plugins/project-bootstrap/docs/CHATGPT_CONTEXT_TRANSFER_EN.md)
 
 Cloud-first one-off setup:
 

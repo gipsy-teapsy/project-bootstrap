@@ -13,11 +13,21 @@ python -m unittest discover -s tests -p "test_package.py" -v
 
 `tests/test_package.py` checks the complete portable manifest against the official [Agent Plugins 1.0.0 schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.json), using Draft 2020-12 validation. The unchanged schema is bundled at `tests/fixtures/plugin.schema-1.0.0.json`; its LF-normalized SHA-256 is pinned in the test, and its identifier must match the manifest's declared version. Validation runs offline after installing the test dependency. Reintroducing the forbidden top-level `interface` is covered by a separate rejection test. OpenAI presentation metadata remains consistent with the compatibility manifest.
 
-The same suite checks semver, name/path consistency, three skill frontmatters, relative links, shared-resource reachability, forbidden MCP/app declarations, language-contract markers, placeholders, common secret/local-path patterns, unexpected binaries, installation documentation, and honest test-status wording. Separate synthetic detector tests cover GitHub PAT prefixes with underscores, reject the erroneous hyphen variants, and retain coverage of the other supported secret families. This scan is a packaging heuristic, not a complete security audit.
+The same suite checks semver, name/path consistency, four Skill frontmatters with exactly three logical roles, relative links, shared-resource reachability, forbidden MCP/app declarations, language-contract markers, placeholders, common secret/local-path patterns, unexpected binaries, installation documentation, and honest test-status wording. Separate synthetic detector tests cover GitHub PAT prefixes with underscores, reject the erroneous hyphen variants, and retain coverage of the other supported secret families. This scan is a packaging heuristic, not a complete security audit. Run the shipped Transfer helper regressions separately with `python -m unittest discover -s tests -p "test_transfer.py" -v`; these do not invoke a model.
 
 ## Marketplace smoke
 
-Import the GitHub marketplace in ChatGPT, inspect the import report, install Project Bootstrap, start a new Chat or Work conversation, and verify that all three skills are discoverable. Then request **Sync now** after a repository update and inspect the saved report.
+Import the GitHub marketplace in ChatGPT, inspect the import report, install Project Bootstrap, start a new Chat or Work conversation, and verify that all four Skills are discoverable: Manager, Master, Task, and Transfer. Transfer is a capability, not a fourth role. Then request **Sync now** after a repository update and inspect the saved report.
+
+## 0.2.0 candidate evidence and release boundary
+
+User-confirmed independent focused re-audit: READY WITH NOTES; PB020-01/02/03 resolved and contract refinement sufficient. Accepted pre-release checks were development 119/119, public 98/98, Transfer 29/29 and independent reproductions 25/25. These counts describe the checked development candidate, not a future committed release artifact.
+
+User-confirmed installed-Candidate runtime covers native discovery of four Skills, a synthetic Transfer happy path, two independent repeat transfers of real ChatGPT conversations, and a negative test with a confirmed incomplete source. Transfer runtime: READY WITH NOTES within those scenarios; no confirmed Transfer defect was reported. This record is prior accepted evidence, not a new runtime execution during release preparation. It does not establish all 16 model-runtime contract scenarios or the full behavioral lifecycle.
+
+Shared snapshots can be incomplete, attachments can be unavailable and content can be redacted. Extraction completeness applies only to accessible records; a public export alone cannot prove completeness of the private original. REFERENCE/HANDOFF must retain these material limitations.
+
+Until the source changes are committed, an isolated allowlisted working-tree copy is only preliminary validation. The public distribution builder exports committed Git blobs. After an authorized source commit, build a fresh public artifact from that exact commit, verify its allowlist, blobs, hashes, version and package tests, and check Cloud Manager provenance against the same commit. Publication, Marketplace Sync and installed-release smoke remain separate operational gates.
 
 ChatGPT marketplace import: NOT TESTED
 
