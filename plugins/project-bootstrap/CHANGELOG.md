@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.2.1 — Unreleased
+## 0.2.1 — 2026-10-14
 
 - Select Cloud Manager output format by purpose: plain fenced `text` blocks for finalized Codex assignments, editable Writing Blocks for human-review documents and prompt drafts where supported, and ordinary chat for discussion. Preserve explicit format requests, syntax-sensitive content and readable fallbacks; actual UI rendering depends on the client/runtime.
 - Default Transfer REFERENCE.md and HANDOFF.md to English, with explicit document-language overrides independent of the established user communication language. Record that language in both documents and use it for continuation and the First Recommended Response; preserve meaning, permissions, restrictions, uncertainty and technical identifiers.
 - Keep HISTORY.json messages untranslated and preserve the existing extraction, archive, completeness and authority contracts. Manual Cloud Context Transfer RU/EN instructions remain separate. User-confirmed focused Cloud Manager and Transfer runtime checks passed in their reported scopes, including two independent A1 checks of exact technical literals against decoded source text. Broader model/UI/runtime coverage remains NOT TESTED.
 
-## 0.2.0 — Unreleased
+## 0.2.0 — 2026-10-12
 
 - Added the standalone `project-bootstrap-transfer` Skill alongside the three Manager, Master and Task roles. It extracts accessible shared-page, supported saved HTML, structured JSON export or previous normalized transcript records into HISTORY.json, then prepares full REFERENCE.md and HANDOFF.md for continuation.
 - Recorded source provenance, separate source and extraction completeness, available message order/IDs/raw metadata, additional accessible branches, and attachment/redaction limitations. Comparison with a user-identified control requires evidence of the same conversation lineage; repeat transfers preserve prior snapshots and inherited meaning with provenance.
