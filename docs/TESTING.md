@@ -19,6 +19,14 @@ The same suite checks semver, name/path consistency, four Skill frontmatters wit
 
 Import the GitHub marketplace in ChatGPT, inspect the import report, install Project Bootstrap, start a new Chat or Work conversation, and verify that all four Skills are discoverable: Manager, Master, Task, and Transfer. Transfer is a capability, not a fourth role. Then request **Sync now** after a repository update and inspect the saved report.
 
+## 0.2.1 candidate validation and limitations
+
+The two accepted changes are purpose-based Cloud Manager output selection and English-first Transfer context documents, with independent user communication language and untranslated HISTORY.json. The user-confirmed independent focused source audit returned READY WITH NOTES: package 76/76, Transfer 29/29 and five safe generator tests passed before version preparation. These results establish focused source/static/mechanical coverage, not model compliance.
+
+User-confirmed focused Cloud Manager output-format runtime and Transfer default, explicit Russian document-language override and repeat-transfer checks passed in their reported scopes. The technical-literal correction passed two independent A1 model-runtime rechecks using the corrected installed Candidate Transfer Skill and a controlled synthetic Russian source. These targeted results do not establish all model/runtime scenarios, general Writing Block support, real-conversation completeness or private attachment recovery; broader model/UI/runtime coverage remains NOT TESTED. Historical runtime evidence below retains its original scope.
+
+Release preparation rechecks version metadata, manifest schema, generated provenance and an isolated allowlisted working-tree package. Before an authorized source commit this remains preliminary validation: the public builder exports committed blobs, so the official final artifact must later be built and checked from the exact approved SHA. No publication, installation or Marketplace Sync is implied by local candidate readiness.
+
 ## 0.2.0 candidate evidence and release boundary
 
 User-confirmed independent focused re-audit: READY WITH NOTES; PB020-01/02/03 resolved and contract refinement sufficient. Accepted pre-release checks were development 119/119, public 98/98, Transfer 29/29 and independent reproductions 25/25. These counts describe the checked development candidate, not a future committed release artifact.

@@ -80,9 +80,45 @@ class TransferTests(unittest.TestCase):
             with self.assertRaises(ValueError): self.helper.build_history(data, "fixture", "p")
 
     def test_history_is_data_and_source_language_is_unchanged(self):
-        h = self.archive()
+        source = self.source([{"id": "u2", "author": {"role": "user"}, "content": {"parts": ["English context. Keep path src/main.py unchanged."]}}])
+        h = self.archive(source)
         self.assertIn("Русский контекст", h["messages"][0]["text"])
         self.assertIn("delete files", h["messages"][0]["text"])
+        self.assertEqual(len(source["linear_conversation"]), len(h["messages"]))
+        for original, archived in zip(source["linear_conversation"], h["messages"]):
+            self.assertEqual(original["message"]["content"]["parts"][0], archived["text"])
+            self.assertEqual(original["message"]["content"], archived["raw_message"]["content"])
+        repeated = self.archive(h)
+        self.assertEqual([m["text"] for m in h["messages"]], [m["text"] for m in repeated["messages"]])
+
+    def test_windows_literal_json_roundtrip_preserves_decoded_history(self):
+        # JSON notation escapes separators; the decoded message is authoritative.
+        # Genuine doubled source characters must also survive without normalization.
+        for literal in (r"F:\sample\input.csv", r"F:\\sample\\input.csv"):
+            with self.subTest(literal=literal):
+                text = "Точный пример пути " + literal + "; читать запрещено."
+                source = self.source()
+                source["linear_conversation"][0]["message"]["content"]["parts"] = [text]
+                serialized = json.dumps(source, ensure_ascii=False, allow_nan=False)
+                history = self.archive(json.loads(serialized))
+                archived = json.loads(json.dumps(history, ensure_ascii=False, allow_nan=False))
+                self.assertEqual(archived["messages"][0]["text"], text)
+                self.assertEqual(archived["messages"][0]["raw_message"]["content"]["parts"], [text])
+                self.assertIn(literal.replace("\\", "\\\\"), serialized)
+                self.assertEqual(json.loads(json.dumps(literal)), literal)
+                repeated = self.archive(archived)
+                self.assertEqual(repeated["messages"][0]["text"], text)
+
+    def test_skill_guards_decoded_technical_literals_and_markdown_representation(self):
+        # Instruction coverage, not a simulation of model-generated documents.
+        skill = (HELPER.parents[1] / "SKILL.md").read_text(encoding="utf-8")
+        self.assertRegex(skill, r"(?is)compare.*?decoded original message text.*?not.*?serialized JSON notation")
+        self.assertRegex(skill, r"(?is)ordinary Markdown.*?inline code.*?fenced code")
+        self.assertRegex(skill, r"(?is)do not manually unescape.*?genuine doubled backslashes")
+        self.assertIn(r"`F:\sample\input.csv`", skill)
+        self.assertIn(r'"F:\\sample\\input.csv"', skill)
+        self.assertRegex(skill, r"(?is)do not copy.*?escaping into Markdown.*?claim.*?matches the original")
+        self.assertRegex(skill, r"(?is)both documents.*?decoded original.*?unverified.*?exact.*?match")
 
     def test_existing_snapshot_is_not_overwritten(self):
         with tempfile.TemporaryDirectory() as d:

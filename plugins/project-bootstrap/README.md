@@ -1,6 +1,6 @@
 # Project Bootstrap plugin
 
-Project Bootstrap v0.2.0 packages four user-facing Skills. Three implement the logical roles:
+Project Bootstrap v0.2.1 packages four user-facing Skills. Three implement the logical roles:
 
 - `project-bootstrap-manager`
 - `project-bootstrap-master`

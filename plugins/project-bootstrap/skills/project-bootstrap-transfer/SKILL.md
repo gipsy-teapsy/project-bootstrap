@@ -42,7 +42,21 @@ Write **REFERENCE.md** as a self-contained durable meaning archive: original fac
 
 Write **HANDOFF.md** with current topic, done/not done, accepted work's Outcome / Scope / Exclusions / Authority / Expected result, open questions, nearest accepted step, last discussion point, continuation instruction and first recommended response. Prepared work remains unperformed. Do not invent a next task or execute it while archiving. Use 1–3 natural sentences for the first response, on the established user communication language, without redundant introduction.
 
-Default REFERENCE/HANDOFF document language to the established source conversation language inferred from the user's messages and explicit preferences, not from English technical reports. Honor an explicit document-language override independently of communication language. If language is unknown, state that or ask; do not invent a preference. HISTORY preserves original message language.
+### Document language and semantic fidelity
+
+Generate REFERENCE.md and HANDOFF.md in English by default, regardless of the source conversation language. An explicit document-language override takes precedence only for the generated context documents; it must not implicitly change the user's established communication language.
+
+Identify the established user-facing communication language from the user's natural-language messages and explicit preferences. Record it explicitly in both documents and instruct the receiving assistant to continue communicating in that language unless the user requests a change. English context documents are not evidence that the user prefers English conversation. Write the first recommended response in the established user communication language, even when the documents use another language. If that preference is unknown, state the uncertainty or ask; do not invent it.
+
+Preserve decisions, rationale, permissions, restrictions, negations, uncertainties and continuity when translating meaning. Keep exact technical identifiers, paths, versions, commands and significant original-language phrases where their wording matters. Do not sacrifice accuracy or important information merely to reduce token consumption.
+
+#### Technical literal fidelity
+
+When quoting or reproducing technical literals, compare their characters with the decoded original message text, including HISTORY.json `text` and raw message content, not serialized JSON notation. Decode JSON with a JSON parser; do not manually unescape, normalize path separators, or alter genuine doubled backslashes in the source text. In ordinary Markdown, preserve the decoded characters verbatim using inline code or fenced code as appropriate. For the original path `F:\sample\input.csv`, the Markdown literal remains `F:\sample\input.csv`; the JSON string `"F:\\sample\\input.csv"` is a valid escaped representation of that path. Do not copy JSON string escaping into Markdown or claim that the modified literal `F:\\sample\\input.csv` matches the original. These rules also apply to identifiers, commands and versions; translation must retain decisions, permissions, negations and uncertainties.
+
+Before returning, compare reproduced technical literals in both documents against the decoded original messages. If an original cannot be checked, state that the spelling is unverified; do not claim an exact source match.
+
+HISTORY.json preserves original message content and languages. Do not translate historical messages or change its existing generation contract, requiredness, schema or extraction behavior. The standalone Cloud RU/EN instructions remain a separate procedure; they do not replace this Skill's workflow.
 
 On repeat transfer, inspect accessible accepted archives of the same confirmed project, preserve inherited meaning with its origin and temporal changes, and produce a **new full REFERENCE and HANDOFF**, never just a delta. Existing archives stay unchanged; contradictory sources need reconciliation by scope/evidence rather than silent replacement. Do not require HISTORY.md.
 

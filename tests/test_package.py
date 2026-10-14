@@ -255,7 +255,7 @@ class PackageContractTests(unittest.TestCase):
         )
         for manifest in (portable, compat):
             self.assertEqual("project-bootstrap", manifest["name"])
-            self.assertEqual("0.2.0", manifest["version"])
+            self.assertEqual("0.2.1", manifest["version"])
             self.assertRegex(manifest["version"], SEMVER)
             self.assertTrue(manifest["description"].strip())
             self.assertEqual("Gipsy", manifest["author"]["name"])
@@ -1279,6 +1279,92 @@ class ContextTransferContractTests(unittest.TestCase):
             for name in self.editions():
                 with self.subTest(entry=entry.name, edition=name):
                     self.assertIn((PLUGIN / 'docs' / name).resolve(), destinations)
+
+
+class Candidate021ContractTests(unittest.TestCase):
+    """Instruction coverage only; these checks do not simulate model/UI behavior."""
+
+    def read(self, relative):
+        return (PLUGIN / relative).read_text(encoding="utf-8")
+
+    def policy(self, relative, heading):
+        text = self.read(relative)
+        level = 4 if relative == "docs/CHATGPT_CLOUD_MANAGER.md" else 3
+        match = re.search(r"(?ms)^#{" + str(level) + r"} " + re.escape(heading)
+                          + r"\n(.*?)(?=^#{1," + str(level) + r"} |\Z)", text)
+        self.assertIsNotNone(match, "Missing focused policy: " + heading)
+        return match.group(1)
+
+    def test_manager_selects_format_by_purpose_in_source_and_generated_contract(self):
+        for relative in ("skills/project-bootstrap-manager/SKILL.md", "docs/CHATGPT_CLOUD_MANAGER.md"):
+            with self.subTest(contract=relative):
+                policy = self.policy(relative, "Output format selection")
+                cases = {
+                    "purpose rather than document language": r"purpose.*?not.*?document language",
+                    "final Task/Master assignment": r"Ready-to-execute.*?Codex Task.*?Codex Master.*?plain fenced `text` block",
+                    "exact copy without editing workflow or duplicate formats": r"line breaks.*?Markdown.*?special characters.*?paths.*?identifiers.*?Do not.*?intermediate editing workflow.*?duplicate",
+                    "human-review plan/specification": r"human review.*?editable Writing Block.*?plans.*?specifications",
+                    "editable prompt even if later sent to Codex": r"Prompt drafts.*?edit.*?Writing Block.*?Codex",
+                    "ordinary discussion": r"Discussion.*?explanations.*?questions.*?recommendations.*?ordinary chat.*?Do not wrap every",
+                }
+                for case, pattern in cases.items():
+                    with self.subTest(case=case):
+                        self.assertRegex(policy, "(?is)" + pattern)
+
+    def test_manager_format_override_syntax_and_client_fallback_are_explicit(self):
+        policy = self.policy("skills/project-bootstrap-manager/SKILL.md", "Output format selection")
+        for pattern in (
+            r"user's established communication language.*?unless.*?explicitly",
+            r"Explicit user format requests.*?precedence.*?technically possible",
+            r"source code.*?JSON.*?YAML.*?commands.*?syntax.*?code blocks",
+            r"cannot guarantee.*?UI component.*?client/runtime",
+            r"Writing Blocks.*?unavailable.*?fallback.*?without losing content",
+        ):
+            self.assertRegex(policy, "(?is)" + pattern)
+
+    def test_cloud_delegates_format_policy_and_transfer_example_separates_languages(self):
+        cloud = self.read("shared/references/cloud-manager-delivery.md")
+        self.assertIn("canonical Manager output format selection", cloud)
+        self.assertIn("English REFERENCE.md and HANDOFF.md by default", cloud)
+        self.assertIn("explicit document-language override", cloud)
+        self.assertIn("first recommended response", cloud)
+        self.assertIn("HISTORY.json", cloud)
+
+    def test_transfer_context_documents_default_to_english_for_any_source_language(self):
+        policy = self.policy("skills/project-bootstrap-transfer/SKILL.md", "Document language and semantic fidelity")
+        self.assertRegex(policy, r"(?is)REFERENCE\.md.*?HANDOFF\.md.*?English by default.*?regardless.*?source conversation language")
+        self.assertNotIn("Default REFERENCE/HANDOFF document language to the established source conversation language", self.read("skills/project-bootstrap-transfer/SKILL.md"))
+
+    def test_transfer_records_user_language_and_does_not_infer_it_from_english_documents(self):
+        policy = self.policy("skills/project-bootstrap-transfer/SKILL.md", "Document language and semantic fidelity")
+        for pattern in (
+            r"communication language.*?user's.*?messages.*?explicit preferences",
+            r"Record.*?both documents.*?receiving assistant.*?continue.*?unless.*?user",
+            r"English.*?documents.*?not evidence.*?prefers English",
+            r"first recommended response.*?established.*?communication language",
+            r"unknown.*?state.*?ask.*?do not invent",
+        ):
+            self.assertRegex(policy, "(?is)" + pattern)
+
+    def test_transfer_document_override_is_independent_of_communication_language(self):
+        policy = self.policy("skills/project-bootstrap-transfer/SKILL.md", "Document language and semantic fidelity")
+        self.assertRegex(policy, r"(?is)explicit document-language override.*?precedence.*?only.*?generated context documents.*?not.*?communication language")
+        for entry in ("docs/USER_GUIDE_RU.md", "docs/QUICK_START_RU.md"):
+            with self.subTest(entry=entry):
+                text = self.read(entry)
+                self.assertRegex(text, r"(?is)Skill.*?REFERENCE\.md.*?HANDOFF\.md.*?по умолчанию на английском")
+                self.assertIn("на русском", text)
+                self.assertIn("язык общения", text)
+
+    def test_transfer_translation_preserves_meaning_and_history_contract(self):
+        policy = self.policy("skills/project-bootstrap-transfer/SKILL.md", "Document language and semantic fidelity")
+        for pattern in (
+            r"decisions.*?rationale.*?permissions.*?restrictions.*?negations.*?uncertainties.*?continuity",
+            r"identifiers.*?paths.*?versions.*?commands.*?original-language phrases",
+            r"Do not sacrifice.*?accuracy.*?information.*?token",
+            r"HISTORY.*?original.*?languages.*?Do not translate.*?generation contract.*?requiredness.*?schema.*?extraction",
+        ):
+            self.assertRegex(policy, "(?is)" + pattern)
 
 
 class PersistentInstructionsContractTests(unittest.TestCase):

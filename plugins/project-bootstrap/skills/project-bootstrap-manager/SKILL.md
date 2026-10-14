@@ -24,6 +24,16 @@ For Participation, immediately explain all three choices in natural language: С
 
 **AGENT-FACING → English by default where appropriate.** Internal contracts, inter-session prompts, and Codex-facing handoffs may use English when it improves stability. English agent-facing material must not switch the surrounding user-facing response to English.
 
+### Output format selection
+
+Choose output format by purpose, not by document language:
+
+- Ready-to-execute assignments for Codex Task, Codex Master or another technical executor: use a plain fenced `text` block. Preserve exact copyable text, line breaks, Markdown, special characters, paths and technical identifiers. Use English by default where appropriate under the existing language contract and user instructions. Do not introduce an intermediate editing workflow or duplicate the same prompt in several formats.
+- Standalone artifacts for human review, editing, reuse or saving: prefer an editable Writing Block where supported, for example project or implementation plans, draft specifications, procedures, concepts and descriptions. Use the user's established communication language by default unless explicitly instructed otherwise; preserve meaning and structure. Prompt drafts the user is expected to edit may use a Writing Block even when their eventual destination is Codex.
+- Discussion, explanations, questions, recommendations and short conversational responses: use ordinary chat formatting. Do not wrap every Manager response in a Writing Block.
+
+Explicit user format requests take precedence where technically possible. For source code, JSON, YAML, commands and other syntax-sensitive content, retain suitable code blocks. Skill instructions cannot guarantee a particular ChatGPT UI component; rendering depends on the client/runtime. If Writing Blocks are unavailable, use a practical readable Markdown fallback without losing content. These presentation choices do not change authority, accepted-work handoff semantics or role responsibilities.
+
 ### Codex handoff presentation
 
 EXPLANATION REQUEST ≠ HANDOFF REQUEST.
@@ -32,7 +42,7 @@ When the user primarily asks what happened, whether it is critical or work was l
 
 **PROMPT → RECOMMENDATION → REASON → COMMENTARY.**
 
-For every Manager-produced ready-to-copy Codex transition, render these visible parts in order:
+Unless an explicit user format request requires a feasible alternative presentation, for every Manager-produced ready-to-copy Codex transition, render these visible parts in order:
 
 1. Make the complete plain fenced copy-ready Codex prompt the first visible content, with no ordinary preamble or label. Agent-facing prompt content may use English by default where appropriate.
 2. Immediately present the recommended model and reasoning effort.
@@ -47,7 +57,7 @@ Render an ordinary copy-ready prompt as a plain fenced `text` block:
 <complete Codex prompt>
 ```
 
-Do not intentionally use writing blocks, editable documents, generated document artifacts, or durable files for an ordinary copy/paste handoff. Those forms remain appropriate for actual durable documents such as specifications, plans, or reports.
+By default, do not intentionally use writing blocks, editable documents, generated document artifacts, or durable files for an ordinary finalized copy/paste handoff. Those forms remain appropriate for actual durable documents such as specifications, plans, or reports and for editable prompt drafts under the output format selection rule.
 
 Follow the Shared Core user-facing disclosure contract. Adapt terminology only from user-attributed evidence, and translate agent-generated terminology into ordinary language before reusing an internal term secondarily. Use incremental discovery: for a vague project, resolve the next outcome-level unknown before making premature implementation choices. Usually ask one primary question, or a small tightly coupled group when that clearly reduces unnecessary conversation. Orient briefly, ask only questions that affect a real decision, and avoid a long questionnaire when facts can be discovered from evidence. Explain all three Participation options when choosing Participation. Do not require lifecycle vocabulary, role names, or a self-declared technical skill level from the user.
 
